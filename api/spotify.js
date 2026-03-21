@@ -1,5 +1,5 @@
 // Vercel serverless function — proxies Spotify API calls
-// Keeps client secret server-side, returns track data + preview URLs
+// Keeps client secret server-side, returns track data + embed IDs
 
 let tokenCache = { token: null, expiresAt: 0 };
 
@@ -8,16 +8,23 @@ async function getToken() {
         return tokenCache.token;
     }
 
+    const creds = Buffer.from(
+        process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET
+    ).toString('base64');
+
     const res = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + Buffer.from(
-                process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET
-            ).toString('base64'),
+            'Authorization': 'Basic ' + creds,
         },
         body: 'grant_type=client_credentials',
     });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Token fetch failed: ${res.status} ${text}`);
+    }
 
     const data = await res.json();
     tokenCache.token = data.access_token;
@@ -34,17 +41,22 @@ module.exports = async function handler(req, res) {
 
     try {
         const token = await getToken();
-        const q = encodeURIComponent(`track:${title} artist:${artist}`);
+        const q = encodeURIComponent(`${title} ${artist}`);
         const searchRes = await fetch(
             `https://api.spotify.com/v1/search?q=${q}&type=track&limit=1`,
             { headers: { 'Authorization': `Bearer ${token}` } }
         );
 
+        if (!searchRes.ok) {
+            const text = await searchRes.text();
+            return res.status(502).json({ error: 'spotify search failed', detail: text });
+        }
+
         const searchData = await searchRes.json();
         const track = searchData.tracks?.items?.[0];
 
         if (!track) {
-            return res.status(404).json({ error: 'track not found' });
+            return res.status(404).json({ error: 'track not found', query: `${title} ${artist}` });
         }
 
         res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
@@ -59,6 +71,6 @@ module.exports = async function handler(req, res) {
             uri: track.uri,
         });
     } catch (err) {
-        return res.status(500).json({ error: 'spotify lookup failed' });
+        return res.status(500).json({ error: 'spotify lookup failed', message: err.message });
     }
-}
+};
