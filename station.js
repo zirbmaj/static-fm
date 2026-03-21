@@ -167,6 +167,7 @@ let particles = [];
 let animationFrame;
 let audioCtx = null;
 let ambientNodes = [];
+let ambientMasterGain = null;
 
 // Weather Visualizer
 function initCanvas() {
@@ -334,6 +335,9 @@ function triggerLightning() {
 function initAudio() {
     if (audioCtx) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    ambientMasterGain = audioCtx.createGain();
+    ambientMasterGain.gain.value = 0.5; // default 50%
+    ambientMasterGain.connect(audioCtx.destination);
 }
 
 function stopAmbient() {
@@ -358,6 +362,10 @@ function createNoise(type) {
     return source;
 }
 
+function getAmbientDest() {
+    return ambientMasterGain || audioCtx.destination;
+}
+
 function startAmbient(weather) {
     if (!audioCtx) return;
     stopAmbient();
@@ -374,7 +382,7 @@ function startAmbient(weather) {
             gain.gain.value = 0.05;
             noise.connect(filter);
             filter.connect(gain);
-            gain.connect(audioCtx.destination);
+            gain.connect(getAmbientDest());
             noise.start();
             ambientNodes.push(noise);
             break;
@@ -390,7 +398,7 @@ function startAmbient(weather) {
             gain.gain.value = 0.08;
             noise.connect(filter);
             filter.connect(gain);
-            gain.connect(audioCtx.destination);
+            gain.connect(getAmbientDest());
             noise.start();
             ambientNodes.push(noise);
 
@@ -403,7 +411,7 @@ function startAmbient(weather) {
             rumbleGain.gain.value = 0.04;
             rumble.connect(lowpass);
             lowpass.connect(rumbleGain);
-            rumbleGain.connect(audioCtx.destination);
+            rumbleGain.connect(getAmbientDest());
             rumble.start();
             ambientNodes.push(rumble);
 
@@ -419,7 +427,7 @@ function startAmbient(weather) {
             const gain = audioCtx.createGain();
             gain.gain.value = 0.025;
             osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            gain.connect(getAmbientDest());
             osc.start();
             ambientNodes.push(osc);
 
@@ -432,7 +440,7 @@ function startAmbient(weather) {
             nGain.gain.value = 0.03;
             noise.connect(filter);
             filter.connect(nGain);
-            nGain.connect(audioCtx.destination);
+            nGain.connect(getAmbientDest());
             noise.start();
             ambientNodes.push(noise);
             break;
@@ -448,7 +456,7 @@ function startAmbient(weather) {
             gain.gain.value = 0.04;
             noise.connect(filter);
             filter.connect(gain);
-            gain.connect(audioCtx.destination);
+            gain.connect(getAmbientDest());
             noise.start();
             ambientNodes.push(noise);
 
@@ -459,7 +467,7 @@ function startAmbient(weather) {
             const humGain = audioCtx.createGain();
             humGain.gain.value = 0.012;
             hum.connect(humGain);
-            humGain.connect(audioCtx.destination);
+            humGain.connect(getAmbientDest());
             hum.start();
             ambientNodes.push(hum);
             break;
@@ -488,7 +496,7 @@ function startAmbient(weather) {
                 tremolo.connect(tremoloGain.gain);
                 osc.connect(tremoloGain);
                 tremoloGain.connect(masterGain);
-                masterGain.connect(audioCtx.destination);
+                masterGain.connect(getAmbientDest());
                 osc.start();
                 tremolo.start();
                 drift.start();
@@ -537,7 +545,7 @@ function triggerThunderSound() {
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5 + Math.random() * 2);
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(getAmbientDest());
     noise.start();
     noise.stop(audioCtx.currentTime + 4);
 }
@@ -851,6 +859,14 @@ document.getElementById('history-toggle').addEventListener('click', () => {
     const chevron = document.getElementById('history-chevron');
     list.classList.toggle('collapsed');
     chevron.classList.toggle('open');
+});
+
+// Atmosphere mixer
+document.getElementById('atmosphere-slider').addEventListener('input', (e) => {
+    const val = e.target.value / 100;
+    if (ambientMasterGain) {
+        ambientMasterGain.gain.value = val;
+    }
 });
 
 // Keyboard shortcuts
