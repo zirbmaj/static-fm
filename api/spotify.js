@@ -12,9 +12,9 @@ async function getToken() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + btoa(
+            'Authorization': 'Basic ' + Buffer.from(
                 process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET
-            ),
+            ).toString('base64'),
         },
         body: 'grant_type=client_credentials',
     });
@@ -25,7 +25,7 @@ async function getToken() {
     return data.access_token;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     const { title, artist } = req.query;
 
     if (!title || !artist) {
