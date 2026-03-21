@@ -488,7 +488,35 @@ function startAmbient(weather) {
     }
 }
 
-// Spotify search link
+// Spotify integration
+let previewAudio = null;
+let spotifyCache = {};
+
+async function lookupSpotify(title, artist) {
+    const key = `${title}|${artist}`;
+    if (spotifyCache[key]) return spotifyCache[key];
+    try {
+        const res = await fetch(`/api/spotify?title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        spotifyCache[key] = data;
+        return data;
+    } catch {
+        return null;
+    }
+}
+
+function playPreview(url) {
+    if (previewAudio) {
+        previewAudio.pause();
+        previewAudio = null;
+    }
+    if (!url) return;
+    previewAudio = new Audio(url);
+    previewAudio.volume = 0.4;
+    previewAudio.play().catch(() => {});
+}
+
 function spotifySearchUrl(title, artist) {
     const q = encodeURIComponent(`${title} ${artist}`);
     return `https://open.spotify.com/search/${q}`;
@@ -544,11 +572,28 @@ function showTrack(index) {
     const titleEl = document.getElementById('track-title');
     titleEl.textContent = track.title;
     titleEl.style.cursor = 'pointer';
-    titleEl.onclick = () => window.open(spotifySearchUrl(track.title, track.artist), '_blank');
     titleEl.title = 'Open on Spotify';
 
     document.getElementById('track-artist').textContent = track.artist;
     document.getElementById('track-mood').textContent = track.mood;
+
+    // Fetch Spotify data for album art, preview, and direct link
+    const albumArtEl = document.getElementById('album-art');
+    lookupSpotify(track.title, track.artist).then(data => {
+        if (data) {
+            titleEl.onclick = () => window.open(data.spotifyUrl || spotifySearchUrl(track.title, track.artist), '_blank');
+            if (data.albumArt) {
+                albumArtEl.src = data.albumArt;
+                albumArtEl.classList.add('visible');
+            }
+            if (data.previewUrl) {
+                playPreview(data.previewUrl);
+            }
+        } else {
+            titleEl.onclick = () => window.open(spotifySearchUrl(track.title, track.artist), '_blank');
+            albumArtEl.classList.remove('visible');
+        }
+    });
 
     // Update playlist
     const playlistEl = document.getElementById('playlist');
