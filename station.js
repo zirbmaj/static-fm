@@ -710,6 +710,11 @@ function spotifySearchUrl(title, artist) {
     return `https://open.spotify.com/search/${q}`;
 }
 
+// Weather name labels
+const WEATHER_NAMES = {
+    rain: 'Rain', storm: 'Storm', fog: 'Fog', snow: 'Snow', clear: 'Clear Night'
+};
+
 // Station Logic
 function setWeather(weather) {
     currentWeather = weather;
@@ -722,6 +727,12 @@ function setWeather(weather) {
     document.querySelectorAll('.weather-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.weather === weather);
     });
+
+    // Update URL and page title
+    const url = new URL(window.location);
+    url.searchParams.set('weather', weather);
+    history.replaceState(null, '', url);
+    document.title = `Static FM — ${WEATHER_NAMES[weather]}`;
 
     // Recreate particles
     createParticles(weather);
@@ -842,9 +853,29 @@ document.getElementById('history-toggle').addEventListener('click', () => {
     chevron.classList.toggle('open');
 });
 
+// Keyboard shortcuts
+const WEATHER_KEYS = { '1': 'rain', '2': 'storm', '3': 'fog', '4': 'snow', '5': 'clear' };
+document.addEventListener('keydown', (e) => {
+    if (WEATHER_KEYS[e.key]) {
+        setWeather(WEATHER_KEYS[e.key]);
+    }
+    if (e.key === ' ' && e.target === document.body) {
+        e.preventDefault();
+        document.getElementById('history-toggle').click();
+    }
+});
+
+// Read weather from URL param
+function getInitialWeather() {
+    const params = new URLSearchParams(window.location.search);
+    const w = params.get('weather');
+    if (w && PLAYLISTS[w]) return w;
+    return 'rain';
+}
+
 // Init
 initCanvas();
-setWeather('rain');
+setWeather(getInitialWeather());
 animate();
 startBroadcastClock();
 renderHistory();
