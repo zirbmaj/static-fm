@@ -320,11 +320,6 @@ function animate() {
         p.draw();
     });
 
-    // Storm lightning
-    if (currentWeather === 'storm' && Math.random() < 0.003) {
-        triggerLightning();
-    }
-
     animationFrame = requestAnimationFrame(animate);
 }
 
@@ -347,6 +342,7 @@ function stopAmbient() {
         try { node.disconnect(); } catch(e) {}
     });
     ambientNodes = [];
+    stopThunderLoop();
 }
 
 function createNoise(type) {
@@ -398,18 +394,21 @@ function startAmbient(weather) {
             noise.start();
             ambientNodes.push(noise);
 
-            // Low rumble for thunder
+            // Constant low rumble base
             const rumble = createNoise();
             const lowpass = audioCtx.createBiquadFilter();
             lowpass.type = 'lowpass';
-            lowpass.frequency.value = 100;
+            lowpass.frequency.value = 80;
             const rumbleGain = audioCtx.createGain();
-            rumbleGain.gain.value = 0.06;
+            rumbleGain.gain.value = 0.04;
             rumble.connect(lowpass);
             lowpass.connect(rumbleGain);
             rumbleGain.connect(audioCtx.destination);
             rumble.start();
             ambientNodes.push(rumble);
+
+            // Dynamic thunder — random rumbles that swell and fade
+            startThunderLoop();
             break;
         }
         case 'fog': {
@@ -500,6 +499,49 @@ function startAmbient(weather) {
     }
 }
 
+// Dynamic thunder
+let thunderInterval = null;
+
+function startThunderLoop() {
+    stopThunderLoop();
+    function scheduleThunder() {
+        const delay = 8000 + Math.random() * 20000; // 8-28 seconds
+        thunderInterval = setTimeout(() => {
+            if (currentWeather !== 'storm' || !audioCtx) return;
+            triggerThunderSound();
+            triggerLightning();
+            scheduleThunder();
+        }, delay);
+    }
+    scheduleThunder();
+}
+
+function stopThunderLoop() {
+    if (thunderInterval) {
+        clearTimeout(thunderInterval);
+        thunderInterval = null;
+    }
+}
+
+function triggerThunderSound() {
+    if (!audioCtx) return;
+    // Thunder crack — sharp noise burst that decays
+    const noise = createNoise();
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 60 + Math.random() * 80;
+    const gain = audioCtx.createGain();
+    const intensity = 0.08 + Math.random() * 0.12;
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(intensity, audioCtx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5 + Math.random() * 2);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start();
+    noise.stop(audioCtx.currentTime + 4);
+}
+
 // Spotify integration
 let previewAudio = null;
 let spotifyCache = {};
@@ -525,8 +567,16 @@ function loadSpotifyEmbed(trackId) {
         container.classList.remove('visible');
         return;
     }
-    iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`;
+    const newSrc = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`;
+    iframe.src = newSrc;
     container.classList.add('visible');
+
+    // Try to autoplay via Spotify Embed API
+    iframe.onload = () => {
+        try {
+            iframe.contentWindow.postMessage({ command: 'toggle' }, '*');
+        } catch(e) {}
+    };
 }
 
 function spotifySearchUrl(title, artist) {
