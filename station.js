@@ -375,7 +375,7 @@ function startAmbient(weather) {
             filter.frequency.value = 800;
             filter.Q.value = 0.5;
             const gain = audioCtx.createGain();
-            gain.gain.value = 0.12;
+            gain.gain.value = 0.05;
             noise.connect(filter);
             filter.connect(gain);
             gain.connect(audioCtx.destination);
@@ -391,7 +391,7 @@ function startAmbient(weather) {
             filter.frequency.value = 600;
             filter.Q.value = 0.3;
             const gain = audioCtx.createGain();
-            gain.gain.value = 0.18;
+            gain.gain.value = 0.08;
             noise.connect(filter);
             filter.connect(gain);
             gain.connect(audioCtx.destination);
@@ -404,7 +404,7 @@ function startAmbient(weather) {
             lowpass.type = 'lowpass';
             lowpass.frequency.value = 100;
             const rumbleGain = audioCtx.createGain();
-            rumbleGain.gain.value = 0.15;
+            rumbleGain.gain.value = 0.06;
             rumble.connect(lowpass);
             lowpass.connect(rumbleGain);
             rumbleGain.connect(audioCtx.destination);
