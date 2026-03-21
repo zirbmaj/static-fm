@@ -439,18 +439,30 @@ function startAmbient(weather) {
             break;
         }
         case 'snow': {
-            // Near silence, very faint high-freq shimmer
+            // Soft indoor warmth — low filtered wind, like being inside while it snows
             const noise = createNoise();
             const filter = audioCtx.createBiquadFilter();
-            filter.type = 'highpass';
-            filter.frequency.value = 6000;
+            filter.type = 'lowpass';
+            filter.frequency.value = 250;
+            filter.Q.value = 0.7;
             const gain = audioCtx.createGain();
-            gain.gain.value = 0.02;
+            gain.gain.value = 0.04;
             noise.connect(filter);
             filter.connect(gain);
             gain.connect(audioCtx.destination);
             noise.start();
             ambientNodes.push(noise);
+
+            // Very subtle low hum — furnace/heater warmth
+            const hum = audioCtx.createOscillator();
+            hum.type = 'sine';
+            hum.frequency.value = 50;
+            const humGain = audioCtx.createGain();
+            humGain.gain.value = 0.012;
+            hum.connect(humGain);
+            humGain.connect(audioCtx.destination);
+            hum.start();
+            ambientNodes.push(hum);
             break;
         }
         case 'clear': {
@@ -513,7 +525,7 @@ function loadSpotifyEmbed(trackId) {
         container.classList.remove('visible');
         return;
     }
-    iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`;
+    iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`;
     container.classList.add('visible');
 }
 
@@ -603,8 +615,13 @@ function showTrack(index) {
         const nextTrack = shuffled[(index + i) % shuffled.length];
         const li = document.createElement('li');
         li.style.cursor = 'pointer';
-        li.title = 'Open on Spotify';
-        li.onclick = () => window.open(spotifySearchUrl(nextTrack.title, nextTrack.artist), '_blank');
+        li.title = 'Play this track';
+        const trackIndex = (index + i) % shuffled.length;
+        li.onclick = () => {
+            currentTrackIndex = trackIndex;
+            showTrack(currentTrackIndex);
+            updateHostMessage();
+        };
         li.innerHTML = `<span class="song-name">${nextTrack.title}</span><span class="song-artist">${nextTrack.artist}</span>`;
         playlistEl.appendChild(li);
     }
@@ -616,14 +633,7 @@ function updateHostMessage() {
     document.getElementById('host-message').textContent = `"${msg}"`;
 }
 
-// Auto-advance tracks (45 seconds — let the vibe breathe)
-function startAutoAdvance() {
-    setInterval(() => {
-        currentTrackIndex++;
-        showTrack(currentTrackIndex);
-        updateHostMessage();
-    }, 45000);
-}
+// No auto-advance — let the track play through. Manual control only.
 
 // Live broadcast timestamp
 function startBroadcastClock() {
@@ -652,7 +662,6 @@ document.querySelectorAll('.weather-btn').forEach(btn => {
 initCanvas();
 setWeather('rain');
 animate();
-startAutoAdvance();
 startBroadcastClock();
 
 // Audio requires user gesture - init on first click
