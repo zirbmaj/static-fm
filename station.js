@@ -370,13 +370,29 @@ function updateHostMessage() {
     document.getElementById('host-message').textContent = `"${msg}"`;
 }
 
-// Auto-advance tracks
+// Auto-advance tracks (45 seconds — let the vibe breathe)
 function startAutoAdvance() {
     setInterval(() => {
         currentTrackIndex++;
         showTrack(currentTrackIndex);
         updateHostMessage();
-    }, 15000);
+    }, 45000);
+}
+
+// Live broadcast timestamp
+function startBroadcastClock() {
+    const el = document.getElementById('broadcast-time');
+    function tick() {
+        const now = new Date();
+        const h = now.getHours();
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        el.textContent = `NOW BROADCASTING ~ ${h12}:${m}:${s} ${ampm}`;
+    }
+    tick();
+    setInterval(tick, 1000);
 }
 
 // Event Listeners
@@ -391,3 +407,4 @@ initCanvas();
 setWeather('rain');
 animate();
 startAutoAdvance();
+startBroadcastClock();
