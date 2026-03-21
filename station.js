@@ -418,7 +418,7 @@ function startAmbient(weather) {
             osc.type = 'sine';
             osc.frequency.value = 65;
             const gain = audioCtx.createGain();
-            gain.gain.value = 0.04;
+            gain.gain.value = 0.025;
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start();
@@ -454,11 +454,20 @@ function startAmbient(weather) {
             break;
         }
         case 'clear': {
-            // Gentle crickets-like oscillation
+            // Gentle crickets-like oscillation with organic frequency drift
             for (let i = 0; i < 3; i++) {
+                const baseFreq = 4000 + Math.random() * 2000;
                 const osc = audioCtx.createOscillator();
                 osc.type = 'sine';
-                osc.frequency.value = 4000 + Math.random() * 2000;
+                osc.frequency.value = baseFreq;
+                // Slow random frequency drift for organic feel
+                const drift = audioCtx.createOscillator();
+                drift.type = 'sine';
+                drift.frequency.value = 0.1 + Math.random() * 0.3;
+                const driftGain = audioCtx.createGain();
+                driftGain.gain.value = 80 + Math.random() * 120;
+                drift.connect(driftGain);
+                driftGain.connect(osc.frequency);
                 const tremolo = audioCtx.createOscillator();
                 tremolo.frequency.value = 5 + Math.random() * 10;
                 const tremoloGain = audioCtx.createGain();
@@ -471,7 +480,8 @@ function startAmbient(weather) {
                 masterGain.connect(audioCtx.destination);
                 osc.start();
                 tremolo.start();
-                ambientNodes.push(osc, tremolo);
+                drift.start();
+                ambientNodes.push(osc, tremolo, drift);
             }
             break;
         }
