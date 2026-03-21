@@ -605,6 +605,75 @@ body.weather-clear {
     --glow: rgba(184, 158, 107, 0.15);
 }
 
+/* Fullscreen */
+.fullscreen-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.fullscreen-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.fullscreen-overlay {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 5;
+    padding: 32px;
+    pointer-events: none;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+}
+
+body.is-fullscreen .app {
+    display: none;
+}
+
+body.is-fullscreen .fullscreen-overlay {
+    display: block;
+}
+
+body.is-fullscreen .fullscreen-btn {
+    z-index: 10;
+}
+
+.fs-track-info {
+    text-align: left;
+}
+
+.fs-track-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.fs-track-artist {
+    font-size: 14px;
+    color: var(--accent);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
 /* Lightning flash */
 .lightning-flash {
     position: fixed;

@@ -783,6 +783,7 @@ function showTrack(index) {
 
     document.getElementById('track-artist').textContent = track.artist;
     document.getElementById('track-mood').textContent = track.mood;
+    updateFullscreenTrack(track.title, track.artist);
 
     // Fetch Spotify data for album art and embed player
     const albumArtEl = document.getElementById('album-art');
@@ -861,6 +862,29 @@ document.getElementById('history-toggle').addEventListener('click', () => {
     chevron.classList.toggle('open');
 });
 
+// Fullscreen toggle
+function toggleFullscreen() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.documentElement.requestFullscreen();
+    }
+}
+
+document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+
+document.addEventListener('fullscreenchange', () => {
+    document.body.classList.toggle('is-fullscreen', !!document.fullscreenElement);
+});
+
+// Sync fullscreen track info
+function updateFullscreenTrack(title, artist) {
+    const fsTitle = document.getElementById('fs-track-title');
+    const fsArtist = document.getElementById('fs-track-artist');
+    if (fsTitle) fsTitle.textContent = title;
+    if (fsArtist) fsArtist.textContent = artist;
+}
+
 // Atmosphere mixer
 document.getElementById('atmosphere-slider').addEventListener('input', (e) => {
     const val = e.target.value / 100;
@@ -878,6 +902,9 @@ document.addEventListener('keydown', (e) => {
     if (e.key === ' ' && e.target === document.body) {
         e.preventDefault();
         document.getElementById('history-toggle').click();
+    }
+    if (e.key === 'f' || e.key === 'F') {
+        if (e.target === document.body) toggleFullscreen();
     }
 });
 
