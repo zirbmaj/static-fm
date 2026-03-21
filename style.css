@@ -395,6 +395,87 @@ body {
     color: var(--text-dim);
 }
 
+/* History */
+.history-section {
+    flex-shrink: 0;
+}
+
+.history-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.history-header:hover {
+    color: var(--text-secondary);
+}
+
+.chevron {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.chevron.open {
+    transform: rotate(90deg);
+}
+
+.history-list {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.history-list.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.history-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.history-list li:hover {
+    color: var(--text-primary);
+}
+
+.history-artist {
+    color: var(--text-dim);
+    font-weight: 300;
+}
+
+.history-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.history-empty {
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 11px;
+    padding: 8px 0;
+}
+
 /* Host Message */
 .host-section {
     margin-top: auto;

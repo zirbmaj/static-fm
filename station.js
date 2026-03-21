@@ -562,6 +562,71 @@ async function lookupSpotify(title, artist) {
 
 let spotifyController = null;
 let spotifyReady = false;
+let trackPlayStart = null;
+let currentTrackPlayed = false;
+let autoAdvanceTimer = null;
+
+// Listening history (localStorage)
+function getHistory() {
+    try {
+        return JSON.parse(localStorage.getItem('staticfm_history') || '[]');
+    } catch { return []; }
+}
+
+function saveToHistory(title, artist, weather, spotifyUrl) {
+    const history = getHistory();
+    const entry = {
+        title, artist, weather, spotifyUrl,
+        timestamp: Date.now(),
+    };
+    // Don't duplicate if same track was just played
+    if (history.length && history[0].title === title && history[0].artist === artist) return;
+    history.unshift(entry);
+    if (history.length > 30) history.length = 30;
+    localStorage.setItem('staticfm_history', JSON.stringify(history));
+    renderHistory();
+}
+
+function renderHistory() {
+    const list = document.getElementById('history-list');
+    if (!list) return;
+    const history = getHistory();
+    list.innerHTML = '';
+    if (history.length === 0) {
+        list.innerHTML = '<li class="history-empty">nothing yet</li>';
+        return;
+    }
+    history.forEach(entry => {
+        const li = document.createElement('li');
+        li.style.cursor = 'pointer';
+        li.onclick = () => {
+            // Find and play this track
+            const weather = entry.weather;
+            setWeather(weather);
+            const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
+            const idx = shuffled.findIndex(t => t.title === entry.title && t.artist === entry.artist);
+            if (idx >= 0) {
+                currentTrackIndex = idx;
+                showTrack(currentTrackIndex);
+                updateHostMessage();
+            }
+        };
+        const ago = timeAgo(entry.timestamp);
+        li.innerHTML = `<span class="song-name">${entry.title} <span class="history-artist">— ${entry.artist}</span></span><span class="history-meta">${entry.weather} · ${ago}</span>`;
+        list.appendChild(li);
+    });
+}
+
+function timeAgo(ts) {
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+}
 
 // Initialize Spotify IFrame API
 window.onSpotifyIframeApiReady = (IFrameAPI) => {
@@ -576,11 +641,24 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
         spotifyController = controller;
         spotifyReady = true;
         controller.addListener('playback_update', (e) => {
+            // Track that music is actually playing (for history)
+            if (!e.data.isPaused && !currentTrackPlayed) {
+                trackPlayStart = Date.now();
+            }
+            // Mark as played after 10 seconds of actual playback
+            if (!e.data.isPaused && trackPlayStart && (Date.now() - trackPlayStart > 10000)) {
+                if (!currentTrackPlayed) {
+                    currentTrackPlayed = true;
+                    const weather = currentWeather;
+                    const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
+                    const track = shuffled[currentTrackIndex % shuffled.length];
+                    const cached = spotifyCache[`${track.title}|${track.artist}`];
+                    saveToHistory(track.title, track.artist, weather, cached?.spotifyUrl || '');
+                }
+            }
             // Auto-advance when track ends
-            if (e.data.isPaused && e.data.position >= e.data.duration - 1) {
-                currentTrackIndex++;
-                showTrack(currentTrackIndex);
-                updateHostMessage();
+            if (e.data.isPaused && e.data.duration > 0 && e.data.position >= e.data.duration - 1) {
+                advanceTrack();
             }
         });
         // Load the current track
@@ -596,6 +674,15 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
     });
 };
 
+function advanceTrack() {
+    if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+    currentTrackIndex++;
+    currentTrackPlayed = false;
+    trackPlayStart = null;
+    showTrack(currentTrackIndex);
+    updateHostMessage();
+}
+
 function loadSpotifyEmbed(trackId) {
     const container = document.getElementById('spotify-embed-container');
     if (!trackId) {
@@ -603,10 +690,18 @@ function loadSpotifyEmbed(trackId) {
         return;
     }
     container.classList.add('visible');
+    currentTrackPlayed = false;
+    trackPlayStart = null;
 
     if (spotifyReady && spotifyController) {
         spotifyController.loadUri(`spotify:track:${trackId}`);
         spotifyController.play();
+
+        // Fallback auto-advance: if the track hasn't changed after 4.5 minutes, advance
+        if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = setTimeout(() => {
+            advanceTrack();
+        }, 270000); // 4.5 min fallback
     }
 }
 
@@ -739,11 +834,20 @@ document.querySelectorAll('.weather-btn').forEach(btn => {
     });
 });
 
+// History toggle
+document.getElementById('history-toggle').addEventListener('click', () => {
+    const list = document.getElementById('history-list');
+    const chevron = document.getElementById('history-chevron');
+    list.classList.toggle('collapsed');
+    chevron.classList.toggle('open');
+});
+
 // Init
 initCanvas();
 setWeather('rain');
 animate();
 startBroadcastClock();
+renderHistory();
 
 // Audio requires user gesture - init on first click
 document.addEventListener('click', function startAudioOnce() {
