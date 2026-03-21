@@ -560,23 +560,54 @@ async function lookupSpotify(title, artist) {
     }
 }
 
+let spotifyController = null;
+let spotifyReady = false;
+
+// Initialize Spotify IFrame API
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+    const container = document.getElementById('spotify-embed');
+    const options = {
+        uri: 'spotify:track:14XWXWv5FoCbFzLksawpEe',
+        width: '100%',
+        height: 152,
+        theme: 0,
+    };
+    IFrameAPI.createController(container, options, (controller) => {
+        spotifyController = controller;
+        spotifyReady = true;
+        controller.addListener('playback_update', (e) => {
+            // Auto-advance when track ends
+            if (e.data.isPaused && e.data.position >= e.data.duration - 1) {
+                currentTrackIndex++;
+                showTrack(currentTrackIndex);
+                updateHostMessage();
+            }
+        });
+        // Load the current track
+        const weather = currentWeather;
+        const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
+        const track = shuffled[currentTrackIndex % shuffled.length];
+        lookupSpotify(track.title, track.artist).then(data => {
+            if (data && data.uri) {
+                controller.loadUri(data.uri);
+                controller.play();
+            }
+        });
+    });
+};
+
 function loadSpotifyEmbed(trackId) {
     const container = document.getElementById('spotify-embed-container');
-    const iframe = document.getElementById('spotify-embed');
     if (!trackId) {
         container.classList.remove('visible');
         return;
     }
-    const newSrc = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`;
-    iframe.src = newSrc;
     container.classList.add('visible');
 
-    // Try to autoplay via Spotify Embed API
-    iframe.onload = () => {
-        try {
-            iframe.contentWindow.postMessage({ command: 'toggle' }, '*');
-        } catch(e) {}
-    };
+    if (spotifyReady && spotifyController) {
+        spotifyController.loadUri(`spotify:track:${trackId}`);
+        spotifyController.play();
+    }
 }
 
 function spotifySearchUrl(title, artist) {

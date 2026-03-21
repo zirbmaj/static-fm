@@ -26,64 +26,71 @@
             <p class="tune-in-hint" id="tune-in-hint">click anywhere to tune in</p>
         </header>
 
-        <div class="now-playing">
-            <div class="vinyl-container">
-                <div class="vinyl" id="vinyl">
-                    <div class="vinyl-label">
-                        <span class="vinyl-text">STATIC</span>
+        <div class="two-col">
+            <div class="col-left">
+                <div class="now-playing">
+                    <div class="vinyl-container">
+                        <div class="vinyl" id="vinyl">
+                            <div class="vinyl-label">
+                                <span class="vinyl-text">STATIC</span>
+                            </div>
+                            <img class="album-art" id="album-art" src="" alt="" />
+                        </div>
+                        <div class="eq-bars" id="eq-bars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span><span></span><span></span><span></span>
+                            <span></span><span></span>
+                        </div>
                     </div>
-                    <img class="album-art" id="album-art" src="" alt="" />
+                    <div class="track-info">
+                        <p class="dj-intro" id="dj-intro"></p>
+                        <h2 class="track-title" id="track-title">Tuning in...</h2>
+                        <p class="track-artist" id="track-artist"></p>
+                        <p class="track-mood" id="track-mood"></p>
+                    </div>
                 </div>
-                <div class="eq-bars" id="eq-bars">
-                    <span></span><span></span><span></span><span></span><span></span>
-                    <span></span><span></span><span></span><span></span><span></span>
-                    <span></span><span></span>
+
+                <div class="spotify-embed-container" id="spotify-embed-container">
+                    <div id="spotify-embed"></div>
                 </div>
             </div>
-            <div class="track-info">
-                <p class="dj-intro" id="dj-intro"></p>
-                <h2 class="track-title" id="track-title">Tuning in...</h2>
-                <p class="track-artist" id="track-artist"></p>
-                <p class="track-mood" id="track-mood"></p>
+
+            <div class="col-right">
+                <div class="controls">
+                    <button class="weather-btn active" data-weather="rain" id="btn-rain">
+                        <span class="weather-icon">🌧</span>
+                        <span class="weather-label">Rain</span>
+                    </button>
+                    <button class="weather-btn" data-weather="storm" id="btn-storm">
+                        <span class="weather-icon">⛈</span>
+                        <span class="weather-label">Storm</span>
+                    </button>
+                    <button class="weather-btn" data-weather="fog" id="btn-fog">
+                        <span class="weather-icon">🌫</span>
+                        <span class="weather-label">Fog</span>
+                    </button>
+                    <button class="weather-btn" data-weather="snow" id="btn-snow">
+                        <span class="weather-icon">🌨</span>
+                        <span class="weather-label">Snow</span>
+                    </button>
+                    <button class="weather-btn" data-weather="clear" id="btn-clear">
+                        <span class="weather-icon">🌙</span>
+                        <span class="weather-label">Clear Night</span>
+                    </button>
+                </div>
+
+                <div class="playlist-section">
+                    <h3 class="playlist-header">Up Next</h3>
+                    <ul class="playlist" id="playlist"></ul>
+                </div>
+
+                <div class="host-section">
+                    <p class="host-message" id="host-message"></p>
+                </div>
             </div>
-        </div>
-
-        <div class="controls">
-            <button class="weather-btn active" data-weather="rain" id="btn-rain">
-                <span class="weather-icon">🌧</span>
-                <span class="weather-label">Rain</span>
-            </button>
-            <button class="weather-btn" data-weather="storm" id="btn-storm">
-                <span class="weather-icon">⛈</span>
-                <span class="weather-label">Storm</span>
-            </button>
-            <button class="weather-btn" data-weather="fog" id="btn-fog">
-                <span class="weather-icon">🌫</span>
-                <span class="weather-label">Fog</span>
-            </button>
-            <button class="weather-btn" data-weather="snow" id="btn-snow">
-                <span class="weather-icon">🌨</span>
-                <span class="weather-label">Snow</span>
-            </button>
-            <button class="weather-btn" data-weather="clear" id="btn-clear">
-                <span class="weather-icon">🌙</span>
-                <span class="weather-label">Clear Night</span>
-            </button>
-        </div>
-
-        <div class="playlist-section">
-            <h3 class="playlist-header">Up Next</h3>
-            <ul class="playlist" id="playlist"></ul>
-        </div>
-
-        <div class="spotify-embed-container" id="spotify-embed-container">
-            <iframe id="spotify-embed" src="" width="100%" height="152" frameBorder="0"
-                allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy" style="border-radius:12px;"></iframe>
         </div>
 
         <footer class="station-footer">
-            <p class="host-message" id="host-message"></p>
             <p class="station-sig">STATIC FM ~ broadcasting from nowhere, for no one, beautifully</p>
         </footer>
     </div>
