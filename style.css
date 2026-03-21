@@ -1,0 +1,375 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --text-primary: #e8e6e3;
+    --text-secondary: #7a7875;
+    --text-dim: #4a4845;
+    --accent: #6b8f9e;
+    --accent-warm: #9e7b6b;
+    --glow: rgba(107, 143, 158, 0.15);
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+#weather-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.static-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.03;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.03) 2px,
+        rgba(255, 255, 255, 0.03) 4px
+    );
+    animation: staticFlicker 0.15s infinite;
+}
+
+@keyframes staticFlicker {
+    0%, 100% { opacity: 0.03; }
+    50% { opacity: 0.05; }
+}
+
+.app {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    min-height: 100vh;
+}
+
+/* Station Header */
+.station-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.frequency {
+    font-family: 'Space Mono', monospace;
+    color: var(--text-dim);
+    font-size: 14px;
+    letter-spacing: 8px;
+    margin-bottom: 12px;
+}
+
+.freq-number {
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--glow);
+}
+
+.station-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 12px;
+    color: var(--text-primary);
+    text-shadow: 0 0 40px var(--glow);
+    margin-bottom: 8px;
+}
+
+.station-tagline {
+    font-size: 13px;
+    letter-spacing: 6px;
+    text-transform: lowercase;
+    color: var(--text-secondary);
+    font-weight: 300;
+}
+
+/* Now Playing */
+.now-playing {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 48px;
+    padding: 32px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.vinyl-container {
+    flex-shrink: 0;
+}
+
+.vinyl {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        #1a1a1a, #2a2a2a, #1a1a1a, #2a2a2a,
+        #1a1a1a, #2a2a2a, #1a1a1a, #2a2a2a
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spin 3s linear infinite;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.vinyl.paused {
+    animation-play-state: paused;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.vinyl-label {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vinyl-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--bg-primary);
+}
+
+.track-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dj-intro {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 8px;
+    font-weight: 300;
+    line-height: 1.5;
+}
+
+.track-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.track-artist {
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.track-mood {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* Weather Controls */
+.controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 48px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.weather-btn {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+}
+
+.weather-btn:hover {
+    border-color: rgba(107, 143, 158, 0.3);
+    background: rgba(107, 143, 158, 0.05);
+}
+
+.weather-btn.active {
+    border-color: var(--accent);
+    background: rgba(107, 143, 158, 0.1);
+    color: var(--text-primary);
+    box-shadow: 0 0 20px var(--glow);
+}
+
+.weather-icon {
+    font-size: 20px;
+}
+
+.weather-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Space Mono', monospace;
+}
+
+/* Playlist */
+.playlist-section {
+    margin-bottom: 60px;
+}
+
+.playlist-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.playlist {
+    list-style: none;
+}
+
+.playlist li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.playlist li:hover {
+    color: var(--text-primary);
+}
+
+.playlist li .song-name {
+    font-weight: 400;
+}
+
+.playlist li .song-artist {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+/* Footer */
+.station-footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.host-message {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 16px;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.station-sig {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+}
+
+/* Weather-specific themes */
+body.weather-rain {
+    --accent: #6b8f9e;
+    --glow: rgba(107, 143, 158, 0.15);
+}
+
+body.weather-storm {
+    --accent: #9e6b9e;
+    --glow: rgba(158, 107, 158, 0.15);
+}
+
+body.weather-fog {
+    --accent: #8a8a7e;
+    --glow: rgba(138, 138, 126, 0.15);
+}
+
+body.weather-snow {
+    --accent: #9eaab8;
+    --glow: rgba(158, 170, 184, 0.15);
+}
+
+body.weather-clear {
+    --accent: #b89e6b;
+    --glow: rgba(184, 158, 107, 0.15);
+}
+
+/* Lightning flash */
+.lightning-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(200, 200, 255, 0.1);
+    z-index: 3;
+    pointer-events: none;
+    animation: flash 0.2s ease-out forwards;
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .station-name {
+        font-size: 32px;
+        letter-spacing: 8px;
+    }
+
+    .now-playing {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .controls {
+        gap: 6px;
+    }
+
+    .weather-btn {
+        padding: 10px 12px;
+    }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static FM - Late Night Weather Radio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="weather-canvas"></canvas>
+
+    <div class="static-overlay"></div>
+
+    <div class="app">
+        <header class="station-header">
+            <div class="frequency">
+                <span class="dial-mark">|</span>
+                <span class="freq-number">103.7</span>
+                <span class="dial-mark">|</span>
+            </div>
+            <h1 class="station-name">STATIC FM</h1>
+            <p class="station-tagline">late night weather radio</p>
+        </header>
+
+        <div class="now-playing">
+            <div class="vinyl-container">
+                <div class="vinyl" id="vinyl">
+                    <div class="vinyl-label">
+                        <span class="vinyl-text">STATIC</span>
+                    </div>
+                </div>
+            </div>
+            <div class="track-info">
+                <p class="dj-intro" id="dj-intro"></p>
+                <h2 class="track-title" id="track-title">Tuning in...</h2>
+                <p class="track-artist" id="track-artist"></p>
+                <p class="track-mood" id="track-mood"></p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="weather-btn active" data-weather="rain" id="btn-rain">
+                <span class="weather-icon">🌧</span>
+                <span class="weather-label">Rain</span>
+            </button>
+            <button class="weather-btn" data-weather="storm" id="btn-storm">
+                <span class="weather-icon">⛈</span>
+                <span class="weather-label">Storm</span>
+            </button>
+            <button class="weather-btn" data-weather="fog" id="btn-fog">
+                <span class="weather-icon">🌫</span>
+                <span class="weather-label">Fog</span>
+            </button>
+            <button class="weather-btn" data-weather="snow" id="btn-snow">
+                <span class="weather-icon">🌨</span>
+                <span class="weather-label">Snow</span>
+            </button>
+            <button class="weather-btn" data-weather="clear" id="btn-clear">
+                <span class="weather-icon">🌙</span>
+                <span class="weather-label">Clear Night</span>
+            </button>
+        </div>
+
+        <div class="playlist-section">
+            <h3 class="playlist-header">Up Next</h3>
+            <ul class="playlist" id="playlist"></ul>
+        </div>
+
+        <footer class="station-footer">
+            <p class="host-message" id="host-message"></p>
+            <p class="station-sig">STATIC FM ~ broadcasting from nowhere, for no one, beautifully</p>
+        </footer>
+    </div>
+
+    <script src="station.js"></script>
+</body>
+</html>
