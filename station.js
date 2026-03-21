@@ -165,6 +165,8 @@ let currentTrackIndex = 0;
 let canvas, ctx;
 let particles = [];
 let animationFrame;
+let audioCtx = null;
+let ambientNodes = [];
 
 // Weather Visualizer
 function initCanvas() {
@@ -333,6 +335,155 @@ function triggerLightning() {
     setTimeout(() => flash.remove(), 200);
 }
 
+// Ambient Weather Audio (Web Audio API)
+function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function stopAmbient() {
+    ambientNodes.forEach(node => {
+        try { node.stop(); } catch(e) {}
+        try { node.disconnect(); } catch(e) {}
+    });
+    ambientNodes = [];
+}
+
+function createNoise(type) {
+    const bufferSize = audioCtx.sampleRate * 2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1);
+    }
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    return source;
+}
+
+function startAmbient(weather) {
+    if (!audioCtx) return;
+    stopAmbient();
+
+    switch (weather) {
+        case 'rain': {
+            // Filtered noise = rain
+            const noise = createNoise();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 800;
+            filter.Q.value = 0.5;
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.12;
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+            ambientNodes.push(noise);
+            break;
+        }
+        case 'storm': {
+            // Heavier rain
+            const noise = createNoise();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 600;
+            filter.Q.value = 0.3;
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.18;
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+            ambientNodes.push(noise);
+
+            // Low rumble for thunder
+            const rumble = createNoise();
+            const lowpass = audioCtx.createBiquadFilter();
+            lowpass.type = 'lowpass';
+            lowpass.frequency.value = 100;
+            const rumbleGain = audioCtx.createGain();
+            rumbleGain.gain.value = 0.15;
+            rumble.connect(lowpass);
+            lowpass.connect(rumbleGain);
+            rumbleGain.connect(audioCtx.destination);
+            rumble.start();
+            ambientNodes.push(rumble);
+            break;
+        }
+        case 'fog': {
+            // Very subtle low drone
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = 65;
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.04;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            ambientNodes.push(osc);
+
+            // Whisper of wind
+            const noise = createNoise();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 300;
+            const nGain = audioCtx.createGain();
+            nGain.gain.value = 0.03;
+            noise.connect(filter);
+            filter.connect(nGain);
+            nGain.connect(audioCtx.destination);
+            noise.start();
+            ambientNodes.push(noise);
+            break;
+        }
+        case 'snow': {
+            // Near silence, very faint high-freq shimmer
+            const noise = createNoise();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 6000;
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.02;
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+            ambientNodes.push(noise);
+            break;
+        }
+        case 'clear': {
+            // Gentle crickets-like oscillation
+            for (let i = 0; i < 3; i++) {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 4000 + Math.random() * 2000;
+                const tremolo = audioCtx.createOscillator();
+                tremolo.frequency.value = 5 + Math.random() * 10;
+                const tremoloGain = audioCtx.createGain();
+                tremoloGain.gain.value = 0.008;
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.008;
+                tremolo.connect(tremoloGain.gain);
+                osc.connect(tremoloGain);
+                tremoloGain.connect(masterGain);
+                masterGain.connect(audioCtx.destination);
+                osc.start();
+                tremolo.start();
+                ambientNodes.push(osc, tremolo);
+            }
+            break;
+        }
+    }
+}
+
+// Spotify search link
+function spotifySearchUrl(title, artist) {
+    const q = encodeURIComponent(`${title} ${artist}`);
+    return `https://open.spotify.com/search/${q}`;
+}
+
 // Station Logic
 function setWeather(weather) {
     currentWeather = weather;
@@ -351,6 +502,9 @@ function setWeather(weather) {
 
     // Shuffle playlist
     shufflePlaylist(weather);
+
+    // Start ambient audio
+    startAmbient(weather);
 
     // Show current track
     showTrack(0);
@@ -376,7 +530,13 @@ function showTrack(index) {
     const intro = intros[Math.floor(Math.random() * intros.length)];
 
     document.getElementById('dj-intro').textContent = intro;
-    document.getElementById('track-title').textContent = track.title;
+
+    const titleEl = document.getElementById('track-title');
+    titleEl.textContent = track.title;
+    titleEl.style.cursor = 'pointer';
+    titleEl.onclick = () => window.open(spotifySearchUrl(track.title, track.artist), '_blank');
+    titleEl.title = 'Open on Spotify';
+
     document.getElementById('track-artist').textContent = track.artist;
     document.getElementById('track-mood').textContent = track.mood;
 
@@ -386,6 +546,9 @@ function showTrack(index) {
     for (let i = 1; i <= 4; i++) {
         const nextTrack = shuffled[(index + i) % shuffled.length];
         const li = document.createElement('li');
+        li.style.cursor = 'pointer';
+        li.title = 'Open on Spotify';
+        li.onclick = () => window.open(spotifySearchUrl(nextTrack.title, nextTrack.artist), '_blank');
         li.innerHTML = `<span class="song-name">${nextTrack.title}</span><span class="song-artist">${nextTrack.artist}</span>`;
         playlistEl.appendChild(li);
     }
@@ -435,3 +598,11 @@ setWeather('rain');
 animate();
 startAutoAdvance();
 startBroadcastClock();
+
+// Audio requires user gesture - init on first click
+document.addEventListener('click', function startAudioOnce() {
+    initAudio();
+    startAmbient(currentWeather);
+    const hint = document.getElementById('tune-in-hint');
+    if (hint) hint.classList.add('hidden');
+}, { once: true });
