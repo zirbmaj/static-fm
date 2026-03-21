@@ -506,15 +506,15 @@ async function lookupSpotify(title, artist) {
     }
 }
 
-function playPreview(url) {
-    if (previewAudio) {
-        previewAudio.pause();
-        previewAudio = null;
+function loadSpotifyEmbed(trackId) {
+    const container = document.getElementById('spotify-embed-container');
+    const iframe = document.getElementById('spotify-embed');
+    if (!trackId) {
+        container.classList.remove('visible');
+        return;
     }
-    if (!url) return;
-    previewAudio = new Audio(url);
-    previewAudio.volume = 0.4;
-    previewAudio.play().catch(() => {});
+    iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`;
+    container.classList.add('visible');
 }
 
 function spotifySearchUrl(title, artist) {
@@ -577,7 +577,7 @@ function showTrack(index) {
     document.getElementById('track-artist').textContent = track.artist;
     document.getElementById('track-mood').textContent = track.mood;
 
-    // Fetch Spotify data for album art, preview, and direct link
+    // Fetch Spotify data for album art and embed player
     const albumArtEl = document.getElementById('album-art');
     lookupSpotify(track.title, track.artist).then(data => {
         if (data) {
@@ -586,12 +586,13 @@ function showTrack(index) {
                 albumArtEl.src = data.albumArt;
                 albumArtEl.classList.add('visible');
             }
-            if (data.previewUrl) {
-                playPreview(data.previewUrl);
+            if (data.id) {
+                loadSpotifyEmbed(data.id);
             }
         } else {
             titleEl.onclick = () => window.open(spotifySearchUrl(track.title, track.artist), '_blank');
             albumArtEl.classList.remove('visible');
+            loadSpotifyEmbed(null);
         }
     });
 
