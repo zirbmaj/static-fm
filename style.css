@@ -385,6 +385,19 @@ body {
 
 .spotify-embed-container.visible {
     display: block;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.spotify-embed-container.visible::before {
+    content: "▶ NOW PLAYING";
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 12px;
 }
 
 /* Footer */
