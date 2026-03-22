@@ -742,6 +742,11 @@ function setWeather(weather) {
     history.replaceState(null, '', url);
     document.title = `Static FM — ${WEATHER_NAMES[weather]}`;
 
+    // Track weather switch
+    if (window.nwlTrack) {
+        window.nwlTrack('weather_switch', { weather, name: WEATHER_NAMES[weather] });
+    }
+
     // Recreate particles
     createParticles(weather);
 
@@ -868,6 +873,7 @@ function toggleFullscreen() {
         document.exitFullscreen();
     } else {
         document.documentElement.requestFullscreen();
+        if (window.nwlTrack) window.nwlTrack('fullscreen', { weather: currentWeather });
     }
 }
 
