@@ -19,6 +19,9 @@ const PLAYLISTS = {
             { title: "November Rain", artist: "Guns N' Roses", mood: "epic melancholy" },
             { title: "Holocene", artist: "Bon Iver", mood: "small and enormous" },
             { title: "Near Light", artist: "Ólafur Arnalds", mood: "piano rain" },
+            { title: "Bloodflows", artist: "SOHN", mood: "pulse" },
+            { title: "All I Need", artist: "Radiohead", mood: "desperate grace" },
+            { title: "Perth", artist: "Bon Iver", mood: "building collapse" },
         ],
         intros: [
             "you're listening to static fm. it's raining somewhere. it's always raining somewhere.",
@@ -52,6 +55,9 @@ const PLAYLISTS = {
             { title: "The National Anthem", artist: "Radiohead", mood: "controlled chaos" },
             { title: "Disorder", artist: "Joy Division", mood: "wired" },
             { title: "Hummer", artist: "Smashing Pumpkins", mood: "wall of sound" },
+            { title: "Strangest Thing", artist: "The War on Drugs", mood: "highway at midnight" },
+            { title: "Atmosphere", artist: "Joy Division", mood: "everything at once" },
+            { title: "New Born", artist: "Muse", mood: "ignition" },
         ],
         intros: [
             "power's flickering. we're still here. barely. here's something loud.",
@@ -82,6 +88,9 @@ const PLAYLISTS = {
             { title: "Dawn Chorus", artist: "Thom Yorke", mood: "regret in g major" },
             { title: "Svefn-g-englar", artist: "Sigur Rós", mood: "weightless" },
             { title: "Misty", artist: "Erroll Garner", mood: "velvet" },
+            { title: "Half Light", artist: "Phoebe Bridgers", mood: "barely visible" },
+            { title: "Only Shallow", artist: "My Bloody Valentine", mood: "beautiful blur" },
+            { title: "On the Nature of Daylight", artist: "Max Richter", mood: "time passing" },
         ],
         intros: [
             "visibility: zero. clarity: overrated. here's the next one.",
@@ -112,6 +121,9 @@ const PLAYLISTS = {
             { title: "For Emma", artist: "Bon Iver", mood: "cabin fever" },
             { title: "Saturn", artist: "Sleeping at Last", mood: "weightless" },
             { title: "Glacier", artist: "James Vincent McMorrow", mood: "thawing" },
+            { title: "Intro", artist: "The xx", mood: "held breath" },
+            { title: "First Breath After Coma", artist: "Explosions in the Sky", mood: "awakening" },
+            { title: "Comptine d'un autre été", artist: "Yann Tiersen", mood: "memory of warmth" },
         ],
         intros: [
             "everything's muffled out there. in here, we turn it up.",
@@ -142,6 +154,9 @@ const PLAYLISTS = {
             { title: "Lua", artist: "Bright Eyes", mood: "honest drunk" },
             { title: "Redbone", artist: "Childish Gambino", mood: "velvet paranoia" },
             { title: "Agnes", artist: "Glass Animals", mood: "gentle devastation" },
+            { title: "Two Weeks", artist: "Grizzly Bear", mood: "trembling" },
+            { title: "Sunset", artist: "The Midnight", mood: "driving home" },
+            { title: "You Only Live Once", artist: "The Strokes", mood: "last chance" },
         ],
         intros: [
             "clear skies. every star accounted for. here's one for the watchers.",
