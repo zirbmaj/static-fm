@@ -32,6 +32,9 @@ const PLAYLISTS = {
             "we've been on air for... honestly, who's counting. the rain isn't.",
             "someone out there is driving with the windows down in this. this one's for you, you beautiful disaster.",
             "the station cat is asleep on the mixing board again. we're not moving her. here's what plays next.",
+            "this next one found us. we didn't pick it. it just showed up and refused to leave.",
+            "you ever notice how rain makes every song better? just us? okay. here's proof.",
+            "the transmitter's got water in it. we sound better wet.",
         ],
         hostMessages: [
             "the rain will stop eventually. but right now, it doesn't have to.",
@@ -66,6 +69,8 @@ const PLAYLISTS = {
             "the backup generator just kicked in. we take that as a sign to keep going.",
             "you ever notice how storms make everything feel like the last scene of a movie? yeah. us too.",
             "the transmitter's rattling. good. means we're still transmitting.",
+            "somewhere a tree just fell and nobody was around to hear it. we were. here's what it sounded like.",
+            "the weather channel called this a warning. we call it a playlist.",
         ],
         hostMessages: [
             "if your lights go out, we were the last thing you heard. you're welcome.",
@@ -99,6 +104,8 @@ const PLAYLISTS = {
             "somewhere in the fog, someone left their headlights on. this one's for them.",
             "we can't see our own antenna right now. broadcasting on faith alone.",
             "if you're lost, stay lost for one more song. you've earned it.",
+            "everything's soft edges tonight. including this next track.",
+            "the fog has opinions about music. this is one of them.",
         ],
         hostMessages: [
             "the fog doesn't hide things. it just asks if you really need to see them right now.",
@@ -132,6 +139,8 @@ const PLAYLISTS = {
             "your footprints are the only ones out there right now. that's kind of beautiful.",
             "the world hit pause. we didn't. here's the next one.",
             "it's the kind of cold that makes your breath visible. like your thoughts decided to show up for once.",
+            "the radiator's doing its best. we appreciate the effort. here's another one.",
+            "somewhere under all this white, spring is planning something. for now, this.",
         ],
         hostMessages: [
             "snow doesn't fall. it arrives. like a thought you didn't know you were having.",
@@ -165,6 +174,8 @@ const PLAYLISTS = {
             "too beautiful to sleep. too late to be awake. perfect.",
             "someone's sitting on their roof right now. they don't need to know we exist. but we do.",
             "the sky is doing the most tonight and we're just the soundtrack. as it should be.",
+            "you can see the edge of the city from here. or maybe that's the edge of everything. hard to tell. here's the next one.",
+            "the stars don't care what time it is. we relate to that.",
         ],
         hostMessages: [
             "on a clear night you can see everything. or nothing. depends where you're looking.",
