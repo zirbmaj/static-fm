@@ -32,7 +32,37 @@ async function getToken() {
     return data.access_token;
 }
 
+// Rate limiting
+const rateMap = new Map();
+const RATE_LIMIT_MS = 2000; // 1 request per 2 seconds per IP
+const ALLOWED_ORIGINS = ['static-fm.nowherelabs.dev', 'static-fm.vercel.app', 'localhost'];
+
+function getIP(req) {
+    return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
+}
+
 module.exports = async function handler(req, res) {
+    // Origin check
+    const origin = req.headers.origin || req.headers.referer || '';
+    const isAllowed = ALLOWED_ORIGINS.some(d => origin.includes(d)) || !origin;
+    if (!isAllowed) {
+        return res.status(403).json({ error: 'forbidden' });
+    }
+
+    // Rate limit
+    const ip = getIP(req);
+    const lastReq = rateMap.get(ip) || 0;
+    if (Date.now() - lastReq < RATE_LIMIT_MS) {
+        return res.status(429).json({ error: 'slow down' });
+    }
+    rateMap.set(ip, Date.now());
+
+    // Clean up old entries periodically
+    if (rateMap.size > 500) {
+        const cutoff = Date.now() - RATE_LIMIT_MS * 10;
+        for (const [k, v] of rateMap) { if (v < cutoff) rateMap.delete(k); }
+    }
+
     const { title, artist } = req.query;
 
     if (!title || !artist) {
@@ -49,7 +79,7 @@ module.exports = async function handler(req, res) {
 
         if (!searchRes.ok) {
             const text = await searchRes.text();
-            return res.status(502).json({ error: 'spotify search failed', detail: text });
+            return res.status(502).json({ error: 'spotify search failed' });
         }
 
         const searchData = await searchRes.json();
@@ -71,6 +101,6 @@ module.exports = async function handler(req, res) {
             uri: track.uri,
         });
     } catch (err) {
-        return res.status(500).json({ error: 'spotify lookup failed', message: err.message });
+        return res.status(500).json({ error: 'spotify lookup failed' });
     }
 };
