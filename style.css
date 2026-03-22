@@ -160,10 +160,11 @@ body {
     display: flex;
     align-items: center;
     gap: 24px;
-    padding: 24px;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 28px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(18, 18, 26, 0.8) 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .vinyl-container {
@@ -314,16 +315,17 @@ body {
 }
 
 .weather-btn {
-    background: var(--bg-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(18, 18, 26, 0.7) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 12px 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 12px;
     transition: all 0.3s ease;
     color: var(--text-secondary);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .weather-btn:hover {
