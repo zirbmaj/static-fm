@@ -71,6 +71,7 @@ const PLAYLISTS = {
             "the transmitter's rattling. good. means we're still transmitting.",
             "somewhere a tree just fell and nobody was around to hear it. we were. here's what it sounded like.",
             "the weather channel called this a warning. we call it a playlist.",
+            "someone just requested baby shark. the station declined.",
         ],
         hostMessages: [
             "if your lights go out, we were the last thing you heard. you're welcome.",
