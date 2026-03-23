@@ -72,6 +72,10 @@ const PLAYLISTS = {
             "somewhere a tree just fell and nobody was around to hear it. we were. here's what it sounded like.",
             "the weather channel called this a warning. we call it a playlist.",
             "someone just requested baby shark. the station declined.",
+            "every flash of lightning is a free strobe light. we didn't ask for it but we're using it.",
+            "the wind is trying to get in. we're not letting it. but we're playing its soundtrack.",
+            "storm playlist rules: everything has to be louder than the thunder. challenge accepted.",
+            "broadcasting from the eye of something. it's calm here. it won't last.",
         ],
         hostMessages: [
             "if your lights go out, we were the last thing you heard. you're welcome.",
