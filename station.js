@@ -1005,6 +1005,25 @@ document.getElementById('atmosphere-slider').addEventListener('input', (e) => {
     }
 });
 
+// Music volume — mute/unmute Spotify iframe
+document.getElementById('music-slider').addEventListener('input', (e) => {
+    const val = parseInt(e.target.value);
+    const embed = document.getElementById('spotify-embed');
+    if (!embed) return;
+    const iframe = embed.querySelector('iframe');
+    if (!iframe) return;
+    if (val === 0) {
+        iframe.dataset.src = iframe.dataset.src || iframe.src;
+        iframe.src = '';
+        iframe.style.opacity = '0.3';
+    } else {
+        if (!iframe.src && iframe.dataset.src) {
+            iframe.src = iframe.dataset.src;
+        }
+        iframe.style.opacity = '1';
+    }
+});
+
 // Keyboard shortcuts
 const WEATHER_KEYS = { '1': 'rain', '2': 'storm', '3': 'fog', '4': 'snow', '5': 'clear' };
 document.addEventListener('keydown', (e) => {
