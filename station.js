@@ -111,12 +111,17 @@ const PLAYLISTS = {
             "if you're lost, stay lost for one more song. you've earned it.",
             "everything's soft edges tonight. including this next track.",
             "the fog has opinions about music. this is one of them.",
+            "we can't tell where the sky ends and the ground begins. doesn't matter. the music doesn't need coordinates.",
+            "the streetlights look like they're whispering. this song is what they're saying.",
+            "fog is just the earth breathing out. we're breathing with it.",
+            "the world is soft focus tonight. everything is beautiful when you can't see the details.",
         ],
         hostMessages: [
             "the fog doesn't hide things. it just asks if you really need to see them right now.",
             "lost isn't a place. it's a feeling. and it has a great soundtrack.",
             "if you can hear us, you're close enough.",
             "the world got soft around the edges tonight. we're not complaining.",
+            "the edges of things matter less than the center. the fog knows that.",
         ]
     },
     snow: {
@@ -146,12 +151,17 @@ const PLAYLISTS = {
             "it's the kind of cold that makes your breath visible. like your thoughts decided to show up for once.",
             "the radiator's doing its best. we appreciate the effort. here's another one.",
             "somewhere under all this white, spring is planning something. for now, this.",
+            "hot chocolate advisory in effect. no expiration.",
+            "the window is a painting tonight. we're the soundtrack to it.",
+            "we counted the snowflakes. lost count. lost interest. here's a song instead.",
+            "the cat is watching the snow fall. we're watching the cat. you're listening to us. the chain continues.",
         ],
         hostMessages: [
             "snow doesn't fall. it arrives. like a thought you didn't know you were having.",
             "the silence between songs hits different when the world is white.",
             "no one shovels at 3am. that's when you listen.",
             "everything looks clean right now. it won't last. enjoy it.",
+            "the furnace kicked on. the warm air means someone is home.",
         ]
     },
     clear: {
