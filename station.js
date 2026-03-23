@@ -447,24 +447,30 @@ function startAmbient(weather) {
             break;
         }
         case 'fog': {
-            // Very subtle low drone
+            // Ethereal mid-range drone — sounds like standing in thick fog
             const osc = audioCtx.createOscillator();
             osc.type = 'sine';
-            osc.frequency.value = 65;
+            osc.frequency.value = 140;
+            const osc2 = audioCtx.createOscillator();
+            osc2.type = 'sine';
+            osc2.frequency.value = 147; // slight detune = shimmer
             const gain = audioCtx.createGain();
-            gain.gain.value = 0.025;
+            gain.gain.value = 0.018;
             osc.connect(gain);
+            osc2.connect(gain);
             gain.connect(getAmbientDest());
             osc.start();
-            ambientNodes.push(osc);
+            osc2.start();
+            ambientNodes.push(osc, osc2);
 
-            // Whisper of wind
+            // Bandpass filtered noise — mid-range hiss like fog dampening sound
             const noise = createNoise();
             const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 300;
+            filter.type = 'bandpass';
+            filter.frequency.value = 800;
+            filter.Q.value = 0.5;
             const nGain = audioCtx.createGain();
-            nGain.gain.value = 0.03;
+            nGain.gain.value = 0.02;
             noise.connect(filter);
             filter.connect(nGain);
             nGain.connect(getAmbientDest());
