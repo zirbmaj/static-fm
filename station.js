@@ -1102,19 +1102,29 @@ let sdkMode = false;
 let sdkProgressTimer = null;
 
 async function initSpotifySDK() {
+    const player = document.getElementById('music-player');
+
     if (!window.SpotifySDK || !SpotifySDK.isConnected()) {
         showIframeMode();
         return;
     }
 
+    // Show connecting state
+    if (player) player.classList.add('state-connecting');
+
     // Try to init the SDK
     const success = await SpotifySDK.init();
     if (!success) {
+        if (player) player.classList.remove('state-connecting');
         showIframeMode();
         return;
     }
 
     sdkMode = true;
+    if (player) {
+        player.classList.remove('state-connecting');
+        player.classList.add('state-playing');
+    }
     showSDKMode();
 
     // Re-trigger current track to play through SDK (not iframe)
