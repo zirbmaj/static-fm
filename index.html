@@ -76,9 +76,12 @@
                     <label class="mixer-label" for="atmosphere-slider">ATMOSPHERE</label>
                     <input type="range" id="atmosphere-slider" min="0" max="100" value="50" class="mixer-slider">
                 </div>
-                <div class="atmosphere-mixer">
-                    <label class="mixer-label" for="music-slider">MUSIC</label>
-                    <input type="range" id="music-slider" min="0" max="100" value="100" class="mixer-slider">
+                <div class="atmosphere-mixer music-toggle-row">
+                    <label class="mixer-label">MUSIC</label>
+                    <button class="music-toggle" id="music-toggle" title="Mute/unmute Spotify">
+                        <span class="toggle-icon" id="music-toggle-icon">♪</span>
+                        <span class="toggle-label" id="music-toggle-label">ON</span>
+                    </button>
                 </div>
             </div>
 

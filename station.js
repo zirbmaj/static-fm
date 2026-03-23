@@ -1005,22 +1005,33 @@ document.getElementById('atmosphere-slider').addEventListener('input', (e) => {
     }
 });
 
-// Music volume — mute/unmute Spotify iframe
-document.getElementById('music-slider').addEventListener('input', (e) => {
-    const val = parseInt(e.target.value);
+// Music toggle — mute/unmute Spotify
+let musicMuted = false;
+document.getElementById('music-toggle').addEventListener('click', () => {
+    musicMuted = !musicMuted;
+    const btn = document.getElementById('music-toggle');
+    const icon = document.getElementById('music-toggle-icon');
+    const label = document.getElementById('music-toggle-label');
     const embed = document.getElementById('spotify-embed');
     if (!embed) return;
     const iframe = embed.querySelector('iframe');
     if (!iframe) return;
-    if (val === 0) {
+
+    if (musicMuted) {
         iframe.dataset.src = iframe.dataset.src || iframe.src;
         iframe.src = '';
         iframe.style.opacity = '0.3';
+        btn.classList.add('muted');
+        icon.textContent = '♪';
+        label.textContent = 'OFF';
     } else {
         if (!iframe.src && iframe.dataset.src) {
             iframe.src = iframe.dataset.src;
         }
         iframe.style.opacity = '1';
+        btn.classList.remove('muted');
+        icon.textContent = '♪';
+        label.textContent = 'ON';
     }
 });
 

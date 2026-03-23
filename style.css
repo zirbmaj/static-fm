@@ -558,6 +558,41 @@ body {
     box-shadow: 0 0 8px var(--glow);
 }
 
+/* Music Toggle */
+.music-toggle-row {
+    justify-content: space-between;
+}
+
+.music-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.music-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.music-toggle.muted {
+    color: var(--text-dim);
+    opacity: 0.5;
+}
+
+.toggle-icon {
+    font-size: 14px;
+}
+
 /* Spotify Embed */
 .spotify-embed-container {
     border-radius: 12px;
