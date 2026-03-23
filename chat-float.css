@@ -1,0 +1,100 @@
+/* Floating Chat — messages drift like letters to nowhere */
+#float-chat-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 50;
+    display: none;
+}
+
+#float-chat-layer.visible {
+    display: block;
+}
+
+.float-msg {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 300px;
+    pointer-events: none;
+    animation: floatDrift 15s ease-in-out forwards;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.float-host {
+    color: rgba(122, 138, 106, 0.6);
+}
+
+@keyframes floatDrift {
+    0% { opacity: 0; transform: translate(0, 0); }
+    10% { opacity: 0.6; }
+    80% { opacity: 0.4; }
+    100% { opacity: 0; transform: translate(var(--drift-x, 20px), var(--drift-y, -30px)); }
+}
+
+/* Toggle button */
+#float-toggle {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 101;
+    background: rgba(8, 8, 14, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#float-toggle:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Input bar */
+#float-input-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 101;
+    display: none;
+}
+
+#float-input-bar.visible {
+    display: block;
+}
+
+#float-input {
+    background: rgba(8, 8, 14, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    width: 320px;
+    max-width: 80vw;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#float-input:focus {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+#float-input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
