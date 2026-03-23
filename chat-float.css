@@ -59,24 +59,23 @@
 /* Floating chat input — minimal, bottom center */
 .chat-float-input {
     position: fixed;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 20px;
+    right: 20px;
     z-index: 15;
     display: flex;
     align-items: center;
     gap: 8px;
-    opacity: 0.5;
+    opacity: 0.6;
     transition: opacity 0.4s ease;
-    background: rgba(8, 8, 14, 0.5);
-    padding: 8px 16px;
+    background: rgba(8, 8, 14, 0.7);
+    padding: 10px 16px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .chat-float-input:focus-within {
-    opacity: 0.9;
-    border-color: rgba(255, 255, 255, 0.1);
+    opacity: 0.95;
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .chat-float-input input {
