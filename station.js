@@ -210,6 +210,9 @@ const PLAYLISTS = {
             "the stars don't play requests. but we do. well, we don't either. but still.",
             "if you're outside right now, look up. if you're inside, that's okay too.",
             "we've been broadcasting to the same sky for a long time. it never complains.",
+            "the moon is eavesdropping again. let it.",
+            "the city is quieter than it thinks it is. listen between the buildings.",
+            "someone is driving with the windows down right now. this is their song too.",
         ]
     }
 };
