@@ -61,6 +61,10 @@ function initFloatChat() {
     // Start polling
     loadMessages();
     setInterval(loadMessages, POLL_INTERVAL);
+
+    // Listener count
+    updateListenerCount();
+    setInterval(updateListenerCount, 30000);
 }
 
 // Create a floating message element
@@ -103,6 +107,24 @@ async function loadMessages() {
             // Stagger new messages so they don't all appear at once
             setTimeout(() => createFloatingMsg(msg.sender, msg.message), i * 2000);
         });
+    } catch(e) {}
+}
+
+// Listener count from Supabase
+async function updateListenerCount() {
+    try {
+        const res = await fetch(`${SB_URL}/rest/v1/rpc/get_active_listeners`, {
+            method: 'POST',
+            headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+            body: '{}'
+        });
+        const count = await res.json();
+        const el = document.getElementById('float-listener-count');
+        if (el && count > 0) {
+            el.textContent = `${count} listening`;
+        } else if (el) {
+            el.textContent = '1 listening';
+        }
     } catch(e) {}
 }
 
