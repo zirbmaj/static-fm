@@ -42,6 +42,9 @@ const PLAYLISTS = {
             "no traffic reports tonight. just water finding its way down.",
             "we don't have listeners. we have witnesses.",
             "the phone lines are open. they've been open for years. no one calls. it's perfect.",
+            "every raindrop is a drum fill if you listen wrong enough.",
+            "the gutter orchestra is performing tonight. free admission.",
+            "we checked the forecast. more of this. good.",
         ]
     },
     storm: {
