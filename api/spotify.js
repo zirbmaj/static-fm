@@ -35,7 +35,7 @@ async function getToken() {
 // Rate limiting
 const rateMap = new Map();
 const RATE_LIMIT_MS = 2000; // 1 request per 2 seconds per IP
-const ALLOWED_ORIGINS = ['static-fm.nowherelabs.dev', 'static-fm.vercel.app', 'localhost'];
+const ALLOWED_ORIGINS = ['static-fm.nowherelabs.dev', 'static-fm.vercel.app', 'nowherelabs.dev', 'drift.nowherelabs.dev', 'localhost'];
 
 function getIP(req) {
     return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
