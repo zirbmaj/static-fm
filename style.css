@@ -597,6 +597,24 @@ body {
     margin-bottom: 12px;
 }
 
+.spotify-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.spotify-hint a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.spotify-hint a:hover {
+    text-decoration: underline;
+}
+
 /* Footer */
 .station-footer {
     text-align: center;
