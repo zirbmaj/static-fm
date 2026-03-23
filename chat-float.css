@@ -1,17 +1,13 @@
-/* Floating Chat — messages drift like letters to nowhere */
-#float-chat-layer {
+/* Floating Chat — messages drift across the screen like letters to nowhere */
+.chat-float-layer {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
-    z-index: 50;
-    display: none;
-}
-
-#float-chat-layer.visible {
-    display: block;
+    z-index: 5;
+    overflow: hidden;
 }
 
 .float-msg {
@@ -19,82 +15,102 @@
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: 300;
-    color: rgba(255, 255, 255, 0.5);
-    max-width: 300px;
+    line-height: 1.6;
+    max-width: 360px;
+    color: rgba(255, 255, 255, 0.35);
+    opacity: 0;
     pointer-events: none;
-    animation: floatDrift 15s ease-in-out forwards;
-    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    animation: chatDrift var(--duration, 20s) ease-in-out forwards;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
+    letter-spacing: 0.2px;
 }
 
-.float-host {
-    color: rgba(122, 138, 106, 0.6);
+.float-msg.host {
+    color: rgba(107, 143, 158, 0.4);
+    font-style: italic;
 }
 
-@keyframes floatDrift {
-    0% { opacity: 0; transform: translate(0, 0); }
-    10% { opacity: 0.6; }
-    80% { opacity: 0.4; }
-    100% { opacity: 0; transform: translate(var(--drift-x, 20px), var(--drift-y, -30px)); }
-}
-
-/* Toggle button */
-#float-toggle {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    z-index: 101;
-    background: rgba(8, 8, 14, 0.7);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.4);
+.float-msg .float-author {
     font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
+    font-size: 8px;
+    letter-spacing: 2px;
+    opacity: 0.5;
+    margin-bottom: 2px;
+    text-transform: uppercase;
 }
 
-#float-toggle:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.6);
+@keyframes chatDrift {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    10% {
+        opacity: var(--max-opacity, 0.35);
+    }
+    80% {
+        opacity: var(--max-opacity, 0.35);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
 }
 
-/* Input bar */
-#float-input-bar {
+/* Floating chat input — minimal, bottom center */
+.chat-float-input {
     position: fixed;
-    bottom: 24px;
+    bottom: 60px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 101;
-    display: none;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.3;
+    transition: opacity 0.4s ease;
 }
 
-#float-input-bar.visible {
-    display: block;
+.chat-float-input:focus-within {
+    opacity: 0.8;
 }
 
-#float-input {
-    background: rgba(8, 8, 14, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 10px 20px;
-    color: rgba(255, 255, 255, 0.7);
+.chat-float-input input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 300;
-    width: 320px;
-    max-width: 80vw;
+    padding: 8px 0;
+    width: 260px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.3s;
 }
 
-#float-input:focus {
+.chat-float-input input:focus {
     border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
 }
 
-#float-input::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+.chat-float-input input::placeholder {
+    color: rgba(255, 255, 255, 0.15);
+    font-style: italic;
+}
+
+.chat-float-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.15);
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .float-msg {
+        font-size: 12px;
+        max-width: 70vw;
+    }
+    .chat-float-input input {
+        width: 200px;
+    }
 }
