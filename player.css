@@ -219,9 +219,11 @@
 
 .connect-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     justify-content: center;
     flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
 }
 
 .connect-btn {
@@ -264,10 +266,29 @@
     margin-top: 12px;
 }
 
-/* Loading state */
+/* State transitions */
+.music-player .player-connect,
+.music-player .player-track,
+.music-player .player-progress,
+.music-player .player-controls,
+.music-player .player-loading {
+    transition: opacity 0.3s ease;
+}
+
+.music-player.state-connecting .player-connect,
+.music-player.state-playing .player-connect,
+.music-player.state-playing .player-loading {
+    display: none;
+}
+
+.music-player.state-connecting .player-loading {
+    display: block;
+}
+
+/* Loading / connecting state */
 .player-loading {
     text-align: center;
-    padding: 20px;
+    padding: 28px 20px;
 }
 
 .player-loading-text {
@@ -276,6 +297,26 @@
     letter-spacing: 3px;
     color: var(--text-secondary);
     animation: tuningPulse 2s ease-in-out infinite;
+}
+
+.player-loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.06);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.player-loading-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 8px;
 }
 
 /* Mobile */
