@@ -557,6 +557,21 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.tuning-state {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 20px;
+    letter-spacing: 3px;
+    animation: tuningPulse 2s ease-in-out infinite;
+}
+
+@keyframes tuningPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
 .spotify-embed-container.visible::before {
     content: "NOW PLAYING";
     display: block;

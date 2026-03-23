@@ -663,8 +663,16 @@ function timeAgo(ts) {
     return `${days}d ago`;
 }
 
+// Show tuning state while Spotify loads
+const embedContainer = document.getElementById('spotify-embed-container');
+if (embedContainer) {
+    embedContainer.insertAdjacentHTML('beforeend', '<div class="tuning-state" id="tuning-state">tuning in...</div>');
+}
+
 // Initialize Spotify IFrame API
 window.onSpotifyIframeApiReady = (IFrameAPI) => {
+    const tuning = document.getElementById('tuning-state');
+    if (tuning) tuning.remove();
     const container = document.getElementById('spotify-embed');
     const options = {
         uri: 'spotify:track:14XWXWv5FoCbFzLksawpEe',
