@@ -773,24 +773,38 @@ function advanceTrack() {
 }
 
 function loadSpotifyEmbed(trackId) {
-    const container = document.getElementById('spotify-embed-container');
     if (!trackId) {
-        container.classList.remove('visible');
+        const container = document.getElementById('spotify-embed-container');
+        if (container) container.classList.remove('visible');
         return;
     }
-    container.classList.add('visible');
+
     currentTrackPlayed = false;
     trackPlayStart = null;
+
+    // SDK mode: play through Web Playback SDK (full control)
+    if (sdkMode) {
+        SpotifySDK.playTrackById(trackId);
+        // Fallback auto-advance
+        if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = setTimeout(() => {
+            advanceTrack();
+        }, 270000);
+        return;
+    }
+
+    // Iframe mode: use embed controller
+    const container = document.getElementById('spotify-embed-container');
+    if (container) container.classList.add('visible');
 
     if (spotifyReady && spotifyController) {
         spotifyController.loadUri(`spotify:track:${trackId}`);
         spotifyController.play();
 
-        // Fallback auto-advance: if the track hasn't changed after 4.5 minutes, advance
         if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = setTimeout(() => {
             advanceTrack();
-        }, 270000); // 4.5 min fallback
+        }, 270000);
     }
 }
 
@@ -1193,16 +1207,6 @@ function showIframeMode() {
     if (playerConnect) playerConnect.style.display = '';
     if (playerActive) playerActive.style.display = 'none';
 }
-
-// Override loadSpotifyEmbed when in SDK mode
-const originalLoadSpotifyEmbed = loadSpotifyEmbed;
-loadSpotifyEmbed = function(trackId) {
-    if (sdkMode && trackId) {
-        SpotifySDK.playTrackById(trackId);
-        return;
-    }
-    originalLoadSpotifyEmbed(trackId);
-};
 
 // Player control buttons
 document.getElementById('player-play')?.addEventListener('click', () => {
