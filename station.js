@@ -85,6 +85,8 @@ const PLAYLISTS = {
             "the storm doesn't know it's beautiful. that's what makes it beautiful.",
             "unplugging is for cowards. we broadcast through the blackout.",
             "this is what happens when the sky has something to say and won't shut up about it.",
+            "lightning is nature's flash photography. we don't consent but we look good.",
+            "the thunder is applause. the music is the performance. you're the audience of one.",
         ]
     },
     fog: {
@@ -125,6 +127,8 @@ const PLAYLISTS = {
             "if you can hear us, you're close enough.",
             "the world got soft around the edges tonight. we're not complaining.",
             "the edges of things matter less than the center. the fog knows that.",
+            "clarity is overrated. the blur is where the interesting stuff happens.",
+            "you don't need to see where you're going. you just need to hear what's playing.",
         ]
     },
     snow: {
@@ -165,6 +169,8 @@ const PLAYLISTS = {
             "no one shovels at 3am. that's when you listen.",
             "everything looks clean right now. it won't last. enjoy it.",
             "the furnace kicked on. the warm air means someone is home.",
+            "the world outside is a blank page. we're the ink.",
+            "tomorrow this will all be footprints and slush. tonight it's perfect.",
         ]
     },
     clear: {
