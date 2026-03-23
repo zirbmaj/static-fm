@@ -705,6 +705,16 @@ if (embedContainer) {
     embedContainer.insertAdjacentHTML('beforeend', '<div class="tuning-state" id="tuning-state">tuning in...</div>');
 }
 
+// Spotify load timeout — if embed never fires, tell the user
+setTimeout(() => {
+    if (!spotifyReady) {
+        const tuning = document.getElementById('tuning-state');
+        if (tuning) tuning.textContent = 'music needs a moment. try enabling third-party cookies or opening spotify.com first';
+        const hint = document.querySelector('.spotify-hint');
+        if (hint) hint.style.display = 'block';
+    }
+}, 10000);
+
 // Initialize Spotify IFrame API
 window.onSpotifyIframeApiReady = (IFrameAPI) => {
     const tuning = document.getElementById('tuning-state');
