@@ -813,12 +813,37 @@ function shufflePlaylist(weather) {
     PLAYLISTS[weather]._shuffled = playlist;
 }
 
+// Rare DJ intros — triggered by specific weather + time combinations
+// These are secrets. Finding one should feel like tuning into a hidden frequency.
+const RARE_INTROS = [
+    { weather: 'storm', hour: 0, text: "midnight storm watch. static fm is the only station still broadcasting. we don't sign off." },
+    { weather: 'rain', hour: 3, text: "you're listening to static fm. it's 3am. nobody else is here. that's the point." },
+    { weather: 'fog', hour: 3, text: "3am fog advisory. the world outside doesn't exist right now. just this." },
+    { weather: 'snow', hour: 4, text: "4am. the snow's been falling for hours. you should be asleep. so should we. here's another one." },
+    { weather: 'clear', hour: 2, text: "2am. clear sky. every satellite is visible. you're on one of them, listening to this." },
+    { weather: 'rain', hour: 23, text: "11pm. the rain just started. everyone else went inside an hour ago. you stayed." },
+    { weather: 'storm', hour: 3, text: "3am storm. the power grid is held together by habit. so are we. keep listening." },
+    { weather: 'fog', hour: 23, text: "late fog. the streetlights look like they're trying to remember something. next up..." },
+    { weather: 'snow', hour: 0, text: "midnight snow. no footprints anywhere. you're the first person awake in this version of the world." },
+    { weather: 'clear', hour: 4, text: "almost dawn. the stars are leaving one by one. catch the last ones while this plays." },
+];
+
+function getRareIntro(weather) {
+    const hour = new Date().getHours();
+    const matches = RARE_INTROS.filter(r => r.weather === weather && r.hour === hour);
+    if (matches.length === 0) return null;
+    // 30% chance to show a rare intro when conditions match
+    if (Math.random() > 0.3) return null;
+    return matches[Math.floor(Math.random() * matches.length)].text;
+}
+
 function showTrack(index) {
     const weather = currentWeather;
     const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
     const track = shuffled[index % shuffled.length];
     const intros = PLAYLISTS[weather].intros;
-    const intro = intros[Math.floor(Math.random() * intros.length)];
+    const rareIntro = getRareIntro(weather);
+    const intro = rareIntro || intros[Math.floor(Math.random() * intros.length)];
 
     document.getElementById('dj-intro').textContent = intro;
 
