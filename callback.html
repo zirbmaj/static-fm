@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static FM — Connecting Spotify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #08080c; color: #d8d4cc; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .msg { text-align: center; font-size: 14px; opacity: 0.6; }
+    </style>
+    <script src="spotify-sdk.js"></script>
+</head>
+<body>
+    <p class="msg" id="status">connecting to spotify...</p>
+    <script>
+        (async () => {
+            const status = document.getElementById('status');
+            try {
+                const token = await SpotifySDK.handleCallback();
+                if (token) {
+                    status.textContent = 'connected. redirecting...';
+                    setTimeout(() => window.location.href = '/', 500);
+                } else {
+                    status.textContent = 'connection failed. redirecting...';
+                    setTimeout(() => window.location.href = '/', 2000);
+                }
+            } catch (e) {
+                status.textContent = 'something went wrong. redirecting...';
+                setTimeout(() => window.location.href = '/', 2000);
+            }
+        })();
+    </script>
+</body>
+</html>
