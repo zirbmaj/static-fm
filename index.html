@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="player.css">
     <link rel="stylesheet" href="chat-float.css">
 </head>
 <body>
@@ -67,27 +68,57 @@
                     </div>
                 </div>
 
+                <!-- Spotify embed (iframe fallback, hidden when SDK active) -->
                 <div class="spotify-embed-container" id="spotify-embed-container">
                     <div id="spotify-embed"></div>
                     <p class="spotify-hint" id="spotify-hint">spotify premium users hear full tracks automatically</p>
                 </div>
 
-                <!-- SDK player controls (hidden until SDK is active) -->
-                <div class="sdk-player" id="sdk-player" style="display:none">
-                    <div class="sdk-progress">
-                        <div class="sdk-progress-bar" id="sdk-progress-bar"></div>
+                <!-- Music Player — SDK-powered, replaces embed when connected -->
+                <div class="music-player" id="music-player">
+                    <!-- Disconnected state -->
+                    <div class="player-connect" id="player-connect">
+                        <p class="player-connect-title">MUSIC</p>
+                        <div class="connect-buttons">
+                            <a class="connect-btn spotify" id="connect-spotify-btn" href="#">connect spotify</a>
+                            <button class="connect-btn free" id="connect-free-btn">listen free</button>
+                        </div>
+                        <p class="connect-hint">spotify premium unlocks full tracks, volume & background play</p>
                     </div>
-                    <div class="sdk-controls">
-                        <button class="sdk-btn" id="sdk-prev" title="Previous">⏮</button>
-                        <button class="sdk-btn sdk-btn-play" id="sdk-play" title="Play/Pause">⏸</button>
-                        <button class="sdk-btn" id="sdk-next" title="Next">⏭</button>
-                    </div>
-                </div>
 
-                <!-- Connect Spotify button (shown when not connected) -->
-                <div class="spotify-connect" id="spotify-connect" style="display:none">
-                    <button class="connect-btn" id="connect-spotify-btn">Connect Spotify Premium</button>
-                    <p class="connect-hint">unlock full tracks, volume control & background play</p>
+                    <!-- Playing state (hidden until connected) -->
+                    <div class="player-active" id="player-active" style="display:none">
+                        <div class="player-provider" id="player-provider">
+                            <span class="provider-dot"></span>
+                            <span id="provider-label">SPOTIFY</span>
+                        </div>
+                        <div class="player-track">
+                            <div class="player-art"><img id="player-art-img" src="" alt="" /></div>
+                            <div class="player-meta">
+                                <div class="player-title" id="player-title"></div>
+                                <div class="player-artist" id="player-artist"></div>
+                            </div>
+                        </div>
+                        <div class="player-progress">
+                            <div class="progress-bar" id="progress-bar">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
+                            <div class="progress-times">
+                                <span id="progress-current">0:00</span>
+                                <span id="progress-duration">0:00</span>
+                            </div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-btn prev" id="player-prev">⏮</button>
+                            <button class="player-btn play-pause" id="player-play">▶</button>
+                            <button class="player-btn next" id="player-next">⏭</button>
+                        </div>
+                    </div>
+
+                    <!-- Loading state -->
+                    <div class="player-loading" id="player-loading" style="display:none">
+                        <p class="player-loading-text">tuning in...</p>
+                    </div>
                 </div>
 
                 <div class="atmosphere-mixer">
@@ -95,16 +126,11 @@
                     <input type="range" id="atmosphere-slider" min="0" max="100" value="50" class="mixer-slider">
                 </div>
                 <div class="atmosphere-mixer" id="music-volume-row">
-                    <label class="mixer-label" for="music-slider">MUSIC</label>
-                    <input type="range" id="music-slider" min="0" max="100" value="70" class="mixer-slider">
-                </div>
-                <!-- Fallback toggle for iframe mode -->
-                <div class="atmosphere-mixer music-toggle-row" id="music-toggle-row" style="display:none">
                     <label class="mixer-label">MUSIC</label>
-                    <button class="music-toggle" id="music-toggle" title="Mute/unmute Spotify">
-                        <span class="toggle-icon" id="music-toggle-icon">♪</span>
-                        <span class="toggle-label" id="music-toggle-label">ON</span>
-                    </button>
+                    <div class="player-volume">
+                        <span class="volume-icon" id="volume-icon">♪</span>
+                        <input type="range" id="music-slider" min="0" max="100" value="70" class="mixer-slider">
+                    </div>
                 </div>
             </div>
 
