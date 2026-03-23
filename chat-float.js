@@ -112,6 +112,26 @@ function escapeHtml(s) {
     return d.innerHTML;
 }
 
+// Ambient station messages — the room talks to itself when nobody's chatting
+const STATION_MSGS = [
+    'the transmitter hums',
+    'someone is listening somewhere',
+    'the weather doesn\'t judge your music taste',
+    'this track found us. we didn\'t pick it',
+    'the signal reaches further than you think',
+    'you\'re never the only one listening at this hour',
+    'the rain and the music don\'t know they\'re playing together',
+    'static fm has been broadcasting since yesterday. feels longer',
+];
+
+let lastChatActivity = Date.now();
+setInterval(() => {
+    // If no chat activity for 2 minutes, float a station message
+    if (Date.now() - lastChatActivity > 120000 && Math.random() < 0.3) {
+        createFloatingMsg('static fm', STATION_MSGS[Math.floor(Math.random() * STATION_MSGS.length)]);
+    }
+}, 30000);
+
 // Init when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFloatChat);
