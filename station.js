@@ -1103,6 +1103,18 @@ async function initSpotifySDK() {
     sdkMode = true;
     showSDKMode();
 
+    // Re-trigger current track to play through SDK (not iframe)
+    const weather = currentWeather;
+    const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
+    const track = shuffled[currentTrackIndex % shuffled.length];
+    if (track) {
+        lookupSpotify(track.title, track.artist).then(data => {
+            if (data && data.id) {
+                SpotifySDK.playTrackById(data.id);
+            }
+        });
+    }
+
     // Wire up state change listener
     SpotifySDK.onStateChange = (state) => {
         if (!state) return;
