@@ -1,0 +1,116 @@
+/* Floating Chat — messages drift across the screen like letters to nowhere */
+.chat-float-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+}
+
+.float-msg {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 360px;
+    color: rgba(255, 255, 255, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    animation: chatDrift var(--duration, 20s) ease-in-out forwards;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
+    letter-spacing: 0.2px;
+}
+
+.float-msg.host {
+    color: rgba(107, 143, 158, 0.4);
+    font-style: italic;
+}
+
+.float-msg .float-author {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    opacity: 0.5;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+}
+
+@keyframes chatDrift {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    10% {
+        opacity: var(--max-opacity, 0.35);
+    }
+    80% {
+        opacity: var(--max-opacity, 0.35);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+}
+
+/* Floating chat input — minimal, bottom center */
+.chat-float-input {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.3;
+    transition: opacity 0.4s ease;
+}
+
+.chat-float-input:focus-within {
+    opacity: 0.8;
+}
+
+.chat-float-input input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    padding: 8px 0;
+    width: 260px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.chat-float-input input:focus {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.chat-float-input input::placeholder {
+    color: rgba(255, 255, 255, 0.15);
+    font-style: italic;
+}
+
+.chat-float-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.15);
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .float-msg {
+        font-size: 12px;
+        max-width: 70vw;
+    }
+    .chat-float-input input {
+        width: 200px;
+    }
+}
