@@ -2,7 +2,7 @@
 // Replaces the iframe embed with full playback control
 // Requires: Spotify Premium + user OAuth via PKCE
 
-const SPOTIFY_CLIENT_ID = ''; // TODO: jam to fill from Spotify Developer Dashboard
+const SPOTIFY_CLIENT_ID = '0f2dff867b094e409a191d4aa38fbbdb';
 const REDIRECT_URI = window.location.origin + '/callback';
 const SCOPES = 'streaming user-read-email user-read-private user-modify-playback-state';
 

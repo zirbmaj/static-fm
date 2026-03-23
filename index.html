@@ -69,14 +69,37 @@
 
                 <div class="spotify-embed-container" id="spotify-embed-container">
                     <div id="spotify-embed"></div>
-                    <p class="spotify-hint">spotify premium users hear full tracks automatically</p>
+                    <p class="spotify-hint" id="spotify-hint">spotify premium users hear full tracks automatically</p>
+                </div>
+
+                <!-- SDK player controls (hidden until SDK is active) -->
+                <div class="sdk-player" id="sdk-player" style="display:none">
+                    <div class="sdk-progress">
+                        <div class="sdk-progress-bar" id="sdk-progress-bar"></div>
+                    </div>
+                    <div class="sdk-controls">
+                        <button class="sdk-btn" id="sdk-prev" title="Previous">⏮</button>
+                        <button class="sdk-btn sdk-btn-play" id="sdk-play" title="Play/Pause">⏸</button>
+                        <button class="sdk-btn" id="sdk-next" title="Next">⏭</button>
+                    </div>
+                </div>
+
+                <!-- Connect Spotify button (shown when not connected) -->
+                <div class="spotify-connect" id="spotify-connect" style="display:none">
+                    <button class="connect-btn" id="connect-spotify-btn">Connect Spotify Premium</button>
+                    <p class="connect-hint">unlock full tracks, volume control & background play</p>
                 </div>
 
                 <div class="atmosphere-mixer">
                     <label class="mixer-label" for="atmosphere-slider">ATMOSPHERE</label>
                     <input type="range" id="atmosphere-slider" min="0" max="100" value="50" class="mixer-slider">
                 </div>
-                <div class="atmosphere-mixer music-toggle-row">
+                <div class="atmosphere-mixer" id="music-volume-row">
+                    <label class="mixer-label" for="music-slider">MUSIC</label>
+                    <input type="range" id="music-slider" min="0" max="100" value="70" class="mixer-slider">
+                </div>
+                <!-- Fallback toggle for iframe mode -->
+                <div class="atmosphere-mixer music-toggle-row" id="music-toggle-row" style="display:none">
                     <label class="mixer-label">MUSIC</label>
                     <button class="music-toggle" id="music-toggle" title="Mute/unmute Spotify">
                         <span class="toggle-icon" id="music-toggle-icon">♪</span>
@@ -136,6 +159,7 @@
     <!-- Floating Chat — messages drift across the screen -->
 
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+    <script src="spotify-sdk.js"></script>
     <script src="https://nowherelabs.dev/nav.js" defer></script>
     <script src="station.js"></script>
     <script src="chat-float.js"></script>

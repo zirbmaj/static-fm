@@ -1072,3 +1072,136 @@ document.addEventListener('click', function startAudioOnce() {
     const hint = document.getElementById('tune-in-hint');
     if (hint) hint.classList.add('hidden');
 }, { once: true });
+
+// --- Spotify SDK Integration ---
+// Detects if user has connected Spotify Premium, uses SDK for full control.
+// Falls back to iframe embed if not connected.
+
+let sdkMode = false;
+let sdkProgressTimer = null;
+
+async function initSpotifySDK() {
+    if (!window.SpotifySDK || !SpotifySDK.isConnected()) {
+        showIframeMode();
+        return;
+    }
+
+    // Try to init the SDK
+    const success = await SpotifySDK.init();
+    if (!success) {
+        showIframeMode();
+        return;
+    }
+
+    sdkMode = true;
+    showSDKMode();
+
+    // Wire up state change listener
+    SpotifySDK.onStateChange = (state) => {
+        if (!state) return;
+
+        const track = state.track_window?.current_track;
+        if (track) {
+            // Update album art
+            const artEl = document.getElementById('album-art');
+            if (artEl && track.album?.images?.[0]) {
+                artEl.src = track.album.images[0].url;
+                artEl.classList.add('visible');
+            }
+        }
+
+        // Update play/pause button
+        const playBtn = document.getElementById('sdk-play');
+        if (playBtn) {
+            playBtn.textContent = state.paused ? '▶' : '⏸';
+        }
+
+        // Auto-advance when track ends
+        if (state.paused && state.position === 0 && state.duration > 0) {
+            advanceTrack();
+        }
+    };
+
+    // Start progress bar update loop
+    sdkProgressTimer = setInterval(async () => {
+        const state = await SpotifySDK.getCurrentState();
+        if (!state) return;
+        const pct = state.duration > 0 ? (state.position / state.duration) * 100 : 0;
+        const bar = document.getElementById('sdk-progress-bar');
+        if (bar) bar.style.width = pct + '%';
+    }, 1000);
+}
+
+function showSDKMode() {
+    // Show SDK controls, hide iframe and toggle
+    const sdkPlayer = document.getElementById('sdk-player');
+    const embedContainer = document.getElementById('spotify-embed-container');
+    const toggleRow = document.getElementById('music-toggle-row');
+    const volumeRow = document.getElementById('music-volume-row');
+    const connectRow = document.getElementById('spotify-connect');
+
+    if (sdkPlayer) sdkPlayer.style.display = '';
+    if (embedContainer) embedContainer.style.display = 'none';
+    if (toggleRow) toggleRow.style.display = 'none';
+    if (volumeRow) volumeRow.style.display = '';
+    if (connectRow) connectRow.style.display = 'none';
+
+    // Update hint
+    const hint = document.getElementById('spotify-hint');
+    if (hint) hint.textContent = 'connected to spotify premium';
+}
+
+function showIframeMode() {
+    // Show iframe, hide SDK controls, show connect button
+    const sdkPlayer = document.getElementById('sdk-player');
+    const toggleRow = document.getElementById('music-toggle-row');
+    const volumeRow = document.getElementById('music-volume-row');
+    const connectRow = document.getElementById('spotify-connect');
+
+    if (sdkPlayer) sdkPlayer.style.display = 'none';
+    if (toggleRow) toggleRow.style.display = '';
+    if (volumeRow) volumeRow.style.display = 'none';
+    if (connectRow) connectRow.style.display = '';
+}
+
+// Override loadSpotifyEmbed when in SDK mode
+const originalLoadSpotifyEmbed = loadSpotifyEmbed;
+loadSpotifyEmbed = function(trackId) {
+    if (sdkMode && trackId) {
+        SpotifySDK.playTrackById(trackId);
+        const sdkPlayer = document.getElementById('sdk-player');
+        if (sdkPlayer) sdkPlayer.style.display = '';
+        return;
+    }
+    originalLoadSpotifyEmbed(trackId);
+};
+
+// SDK control buttons
+document.getElementById('sdk-play')?.addEventListener('click', () => {
+    if (sdkMode) SpotifySDK.togglePlay();
+});
+document.getElementById('sdk-next')?.addEventListener('click', () => {
+    advanceTrack();
+});
+document.getElementById('sdk-prev')?.addEventListener('click', () => {
+    if (currentTrackIndex > 0) {
+        currentTrackIndex--;
+        showTrack(currentTrackIndex);
+    }
+});
+
+// Music volume slider — controls SDK volume when connected
+document.getElementById('music-slider')?.addEventListener('input', (e) => {
+    const val = parseInt(e.target.value) / 100;
+    if (sdkMode) {
+        SpotifySDK.setVolume(val);
+    }
+});
+
+// Connect Spotify button
+document.getElementById('connect-spotify-btn')?.addEventListener('click', () => {
+    if (window.SpotifySDK) SpotifySDK.startAuth();
+});
+
+// Init SDK on load
+initSpotifySDK();
