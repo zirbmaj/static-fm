@@ -30,7 +30,7 @@
 .chat-sidebar.collapsed .chat-collapse-btn {
     position: absolute;
     left: -56px;
-    top: 12px;
+    top: 56px;
     z-index: 101;
     background: rgba(8, 8, 14, 0.9);
     backdrop-filter: blur(8px);
@@ -153,7 +153,7 @@
     .chat-sidebar.collapsed .chat-collapse-btn {
         position: absolute;
         left: -48px;
-        top: 12px;
+        top: 56px;
         opacity: 1;
         pointer-events: all;
         z-index: 101;
