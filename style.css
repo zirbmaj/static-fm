@@ -24,6 +24,18 @@ body {
     position: relative;
 }
 
+@property --accent {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #6b8f9e;
+}
+
+@property --glow {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(107, 143, 158, 0.15);
+}
+
 #weather-canvas {
     position: fixed;
     top: 0;
@@ -358,6 +370,9 @@ body {
     overflow-y: auto;
 }
 
+.playlist-section::-webkit-scrollbar { width: 2px; }
+.playlist-section::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 1px; }
+
 .playlist-header {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -594,6 +609,28 @@ body {
     font-size: 9px;
     color: var(--text-dim);
     letter-spacing: 3px;
+}
+
+.station-nav {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    margin-top: 6px;
+}
+
+.station-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.station-nav a:hover {
+    color: var(--accent);
+}
+
+/* Smooth weather transitions via @property */
+body {
+    transition: --accent 0.8s ease, --glow 0.8s ease;
 }
 
 /* Weather-specific themes */

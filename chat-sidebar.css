@@ -24,15 +24,18 @@
     pointer-events: none;
 }
 
-/* Floating toggle button when sidebar is collapsed */
+/* Floating toggle button when sidebar is collapsed
+   Note: position:fixed doesn't work inside a transformed parent,
+   so we move the button outside via negative transform to compensate */
 .chat-sidebar.collapsed .chat-collapse-btn {
-    position: fixed;
-    right: 12px;
+    position: absolute;
+    left: -48px;
     top: 12px;
     z-index: 101;
     background: rgba(8, 8, 14, 0.85);
     backdrop-filter: blur(8px);
     padding: 8px 14px;
+    border-radius: 4px;
 }
 
 .chat-sidebar-header {
@@ -146,8 +149,8 @@
     .chat-sidebar { width: 100%; max-width: 280px; }
     .chat-sidebar.collapsed { transform: translateX(100%); }
     .chat-sidebar.collapsed .chat-collapse-btn {
-        position: fixed;
-        right: 12px;
+        position: absolute;
+        left: -48px;
         top: 12px;
         opacity: 1;
         pointer-events: all;
