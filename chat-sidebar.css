@@ -15,13 +15,24 @@
 }
 
 .chat-sidebar.collapsed {
-    transform: translateX(240px);
+    transform: translateX(280px);
 }
 
 .chat-sidebar.collapsed .chat-messages,
 .chat-sidebar.collapsed .chat-input-bar {
     opacity: 0;
     pointer-events: none;
+}
+
+/* Floating toggle button when sidebar is collapsed */
+.chat-sidebar.collapsed .chat-collapse-btn {
+    position: fixed;
+    right: 12px;
+    top: 12px;
+    z-index: 101;
+    background: rgba(8, 8, 14, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 8px 14px;
 }
 
 .chat-sidebar-header {
