@@ -191,6 +191,10 @@ const PLAYLISTS = {
             "the sky is doing the most tonight and we're just the soundtrack. as it should be.",
             "you can see the edge of the city from here. or maybe that's the edge of everything. hard to tell. here's the next one.",
             "the stars don't care what time it is. we relate to that.",
+            "someone just made a wish on something that burned up 10,000 years ago. hope it works.",
+            "the air is doing that thing where you can smell distance. here's a song that matches.",
+            "we looked up the name of that constellation. forgot it. doesn't matter. it's still there.",
+            "every window in this city is a different story. this is the soundtrack to all of them at once.",
         ],
         hostMessages: [
             "on a clear night you can see everything. or nothing. depends where you're looking.",
