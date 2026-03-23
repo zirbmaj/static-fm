@@ -1005,34 +1005,41 @@ document.getElementById('atmosphere-slider').addEventListener('input', (e) => {
     }
 });
 
-// Music toggle — mute/unmute Spotify
-let musicMuted = false;
-document.getElementById('music-toggle').addEventListener('click', () => {
-    musicMuted = !musicMuted;
-    const btn = document.getElementById('music-toggle');
-    const icon = document.getElementById('music-toggle-icon');
-    const label = document.getElementById('music-toggle-label');
+// Music volume slider — controls SDK volume or iframe mute
+document.getElementById('music-slider')?.addEventListener('input', (e) => {
+    const val = parseInt(e.target.value);
+    if (sdkMode) {
+        SpotifySDK.setVolume(val / 100);
+        return;
+    }
+    // Iframe fallback: mute at 0, unmute otherwise
     const embed = document.getElementById('spotify-embed');
     if (!embed) return;
     const iframe = embed.querySelector('iframe');
     if (!iframe) return;
-
-    if (musicMuted) {
+    if (val === 0) {
         iframe.dataset.src = iframe.dataset.src || iframe.src;
         iframe.src = '';
         iframe.style.opacity = '0.3';
-        btn.classList.add('muted');
-        icon.textContent = '♪';
-        label.textContent = 'OFF';
     } else {
         if (!iframe.src && iframe.dataset.src) {
             iframe.src = iframe.dataset.src;
         }
         iframe.style.opacity = '1';
-        btn.classList.remove('muted');
-        icon.textContent = '♪';
-        label.textContent = 'ON';
     }
+});
+
+// Volume icon click — toggle mute
+document.getElementById('volume-icon')?.addEventListener('click', () => {
+    const slider = document.getElementById('music-slider');
+    if (!slider) return;
+    if (parseInt(slider.value) > 0) {
+        slider.dataset.prevValue = slider.value;
+        slider.value = 0;
+    } else {
+        slider.value = slider.dataset.prevValue || 70;
+    }
+    slider.dispatchEvent(new Event('input'));
 });
 
 // Keyboard shortcuts
@@ -1102,16 +1109,27 @@ async function initSpotifySDK() {
 
         const track = state.track_window?.current_track;
         if (track) {
-            // Update album art
-            const artEl = document.getElementById('album-art');
+            // Update player track info
+            const artEl = document.getElementById('player-art-img');
             if (artEl && track.album?.images?.[0]) {
                 artEl.src = track.album.images[0].url;
-                artEl.classList.add('visible');
+                artEl.classList.add('loaded');
+            }
+            const titleEl = document.getElementById('player-title');
+            if (titleEl) titleEl.textContent = track.name;
+            const artistEl = document.getElementById('player-artist');
+            if (artistEl) artistEl.textContent = track.artists?.map(a => a.name).join(', ');
+
+            // Also update the main album art + track info
+            const mainArt = document.getElementById('album-art');
+            if (mainArt && track.album?.images?.[0]) {
+                mainArt.src = track.album.images[0].url;
+                mainArt.classList.add('visible');
             }
         }
 
         // Update play/pause button
-        const playBtn = document.getElementById('sdk-play');
+        const playBtn = document.getElementById('player-play');
         if (playBtn) {
             playBtn.textContent = state.paused ? '▶' : '⏸';
         }
@@ -1123,45 +1141,45 @@ async function initSpotifySDK() {
     };
 
     // Start progress bar update loop
+    function formatTime(ms) {
+        const s = Math.floor(ms / 1000);
+        const m = Math.floor(s / 60);
+        return m + ':' + String(s % 60).padStart(2, '0');
+    }
+
     sdkProgressTimer = setInterval(async () => {
         const state = await SpotifySDK.getCurrentState();
         if (!state) return;
         const pct = state.duration > 0 ? (state.position / state.duration) * 100 : 0;
-        const bar = document.getElementById('sdk-progress-bar');
-        if (bar) bar.style.width = pct + '%';
+        const fill = document.getElementById('progress-fill');
+        if (fill) fill.style.width = pct + '%';
+        const current = document.getElementById('progress-current');
+        if (current) current.textContent = formatTime(state.position);
+        const duration = document.getElementById('progress-duration');
+        if (duration) duration.textContent = formatTime(state.duration);
     }, 1000);
 }
 
 function showSDKMode() {
-    // Show SDK controls, hide iframe and toggle
-    const sdkPlayer = document.getElementById('sdk-player');
     const embedContainer = document.getElementById('spotify-embed-container');
-    const toggleRow = document.getElementById('music-toggle-row');
-    const volumeRow = document.getElementById('music-volume-row');
-    const connectRow = document.getElementById('spotify-connect');
+    const playerConnect = document.getElementById('player-connect');
+    const playerActive = document.getElementById('player-active');
+    const playerLoading = document.getElementById('player-loading');
+    const providerLabel = document.getElementById('provider-label');
 
-    if (sdkPlayer) sdkPlayer.style.display = '';
     if (embedContainer) embedContainer.style.display = 'none';
-    if (toggleRow) toggleRow.style.display = 'none';
-    if (volumeRow) volumeRow.style.display = '';
-    if (connectRow) connectRow.style.display = 'none';
-
-    // Update hint
-    const hint = document.getElementById('spotify-hint');
-    if (hint) hint.textContent = 'connected to spotify premium';
+    if (playerConnect) playerConnect.style.display = 'none';
+    if (playerActive) playerActive.style.display = '';
+    if (playerLoading) playerLoading.style.display = 'none';
+    if (providerLabel) providerLabel.textContent = 'SPOTIFY';
 }
 
 function showIframeMode() {
-    // Show iframe, hide SDK controls, show connect button
-    const sdkPlayer = document.getElementById('sdk-player');
-    const toggleRow = document.getElementById('music-toggle-row');
-    const volumeRow = document.getElementById('music-volume-row');
-    const connectRow = document.getElementById('spotify-connect');
+    const playerConnect = document.getElementById('player-connect');
+    const playerActive = document.getElementById('player-active');
 
-    if (sdkPlayer) sdkPlayer.style.display = 'none';
-    if (toggleRow) toggleRow.style.display = '';
-    if (volumeRow) volumeRow.style.display = 'none';
-    if (connectRow) connectRow.style.display = '';
+    if (playerConnect) playerConnect.style.display = '';
+    if (playerActive) playerActive.style.display = 'none';
 }
 
 // Override loadSpotifyEmbed when in SDK mode
@@ -1169,38 +1187,48 @@ const originalLoadSpotifyEmbed = loadSpotifyEmbed;
 loadSpotifyEmbed = function(trackId) {
     if (sdkMode && trackId) {
         SpotifySDK.playTrackById(trackId);
-        const sdkPlayer = document.getElementById('sdk-player');
-        if (sdkPlayer) sdkPlayer.style.display = '';
         return;
     }
     originalLoadSpotifyEmbed(trackId);
 };
 
-// SDK control buttons
-document.getElementById('sdk-play')?.addEventListener('click', () => {
+// Player control buttons
+document.getElementById('player-play')?.addEventListener('click', () => {
     if (sdkMode) SpotifySDK.togglePlay();
 });
-document.getElementById('sdk-next')?.addEventListener('click', () => {
+document.getElementById('player-next')?.addEventListener('click', () => {
     advanceTrack();
 });
-document.getElementById('sdk-prev')?.addEventListener('click', () => {
+document.getElementById('player-prev')?.addEventListener('click', () => {
     if (currentTrackIndex > 0) {
         currentTrackIndex--;
         showTrack(currentTrackIndex);
     }
 });
 
-// Music volume slider — controls SDK volume when connected
-document.getElementById('music-slider')?.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value) / 100;
-    if (sdkMode) {
-        SpotifySDK.setVolume(val);
-    }
+// Progress bar seeking
+document.getElementById('progress-bar')?.addEventListener('click', async (e) => {
+    if (!sdkMode) return;
+    const state = await SpotifySDK.getCurrentState();
+    if (!state || !state.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    SpotifySDK.seek(Math.floor(pct * state.duration));
 });
 
 // Connect Spotify button
-document.getElementById('connect-spotify-btn')?.addEventListener('click', () => {
+document.getElementById('connect-spotify-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
     if (window.SpotifySDK) SpotifySDK.startAuth();
+});
+
+// Listen Free button (placeholder for SoundCloud/free fallback)
+document.getElementById('connect-free-btn')?.addEventListener('click', () => {
+    // For now, just use the iframe embed mode
+    const playerConnect = document.getElementById('player-connect');
+    if (playerConnect) playerConnect.style.display = 'none';
+    const embedContainer = document.getElementById('spotify-embed-container');
+    if (embedContainer) embedContainer.style.display = '';
 });
 
 // Init SDK on load
