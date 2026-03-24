@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+/* Accessibility */
+.skip-link { position: absolute; left: -9999px; top: 0; z-index: 9999; padding: 8px 16px; background: var(--bg-secondary); color: var(--text-primary); font-size: 12px; text-decoration: none; border: 1px solid var(--accent); border-radius: 4px; }
+.skip-link:focus { left: 8px; top: 8px; }
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 :root {
     --bg-primary: #0a0a0f;
     --bg-secondary: #12121a;
