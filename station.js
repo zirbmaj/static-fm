@@ -392,6 +392,8 @@ function triggerLightning() {
 function initAudio() {
     if (audioCtx) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Resume context — browsers create it suspended until user gesture
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     ambientMasterGain = audioCtx.createGain();
     ambientMasterGain.gain.value = 0.5; // default 50%
     ambientMasterGain.connect(audioCtx.destination);
@@ -1099,6 +1101,7 @@ renderHistory();
 document.addEventListener('click', function startAudioOnce() {
     initAudio();
     startAmbient(currentWeather);
+    showTrack(0);
     const hint = document.getElementById('tune-in-hint');
     if (hint) hint.classList.add('hidden');
 }, { once: true });
