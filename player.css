@@ -230,6 +230,7 @@
     letter-spacing: 1px;
     padding: 16px 20px;
     min-height: 44px;
+    box-sizing: border-box;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
