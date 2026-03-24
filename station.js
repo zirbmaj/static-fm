@@ -774,9 +774,18 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
                     saveToHistory(track.title, track.artist, weather, cached?.spotifyUrl || '');
                 }
             }
-            // Auto-advance when track ends
-            if (e.data.isPaused && e.data.duration > 0 && e.data.position >= e.data.duration - 1) {
-                advanceTrack();
+            // Auto-advance when track ends (full track or 30s preview)
+            if (e.data.isPaused && e.data.duration > 0) {
+                const pos = e.data.position;
+                const dur = e.data.duration;
+                // Full track ended
+                if (pos >= dur - 1) {
+                    advanceTrack();
+                }
+                // 30s preview ended: position ~29-31s but duration is much longer
+                else if (!sdkMode && pos > 25 && pos < 35 && dur > 60) {
+                    setTimeout(() => advanceTrack(), 2000);
+                }
             }
         });
         // Load the current track
@@ -815,11 +824,12 @@ function loadSpotifyEmbed(trackId) {
         spotifyController.loadUri(`spotify:track:${trackId}`);
         spotifyController.play();
 
-        // Fallback auto-advance: if the track hasn't changed after 4.5 minutes, advance
+        // Fallback auto-advance: shorter for free previews, longer for full tracks
         if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+        const fallbackMs = sdkMode ? 270000 : 45000; // 4.5 min for full tracks, 45s for previews
         autoAdvanceTimer = setTimeout(() => {
             advanceTrack();
-        }, 270000); // 4.5 min fallback
+        }, fallbackMs);
     }
 }
 
