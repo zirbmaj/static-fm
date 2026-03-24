@@ -633,6 +633,7 @@ async function lookupSpotify(title, artist) {
 
 let spotifyController = null;
 let spotifyReady = false;
+let spotifyIsPlaying = false;
 let trackPlayStart = null;
 let currentTrackPlayed = false;
 let autoAdvanceTimer = null;
@@ -730,6 +731,8 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
         spotifyController = controller;
         spotifyReady = true;
         controller.addListener('playback_update', (e) => {
+            // Track play/pause state for tab-switch auto-resume
+            spotifyIsPlaying = !e.data.isPaused;
             // Track that music is actually playing (for history)
             if (!e.data.isPaused && !currentTrackPlayed) {
                 trackPlayStart = Date.now();
@@ -1201,6 +1204,23 @@ document.getElementById('music-slider')?.addEventListener('input', (e) => {
 // Connect Spotify button
 document.getElementById('connect-spotify-btn')?.addEventListener('click', () => {
     if (window.SpotifySDK) SpotifySDK.startAuth();
+});
+
+// Auto-resume playback when returning to tab (spotify pauses in background)
+let wasPlayingBeforeHidden = false;
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        wasPlayingBeforeHidden = sdkMode
+            ? !document.getElementById('sdk-play')?.textContent?.includes('▶')
+            : spotifyIsPlaying;
+        return;
+    }
+    if (!wasPlayingBeforeHidden) return;
+    if (sdkMode) {
+        SpotifySDK.resume();
+    } else if (spotifyReady && spotifyController) {
+        spotifyController.play();
+    }
 });
 
 // Init SDK on load
