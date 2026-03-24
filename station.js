@@ -399,13 +399,27 @@ function initAudio() {
     ambientMasterGain.connect(audioCtx.destination);
 }
 
-function stopAmbient() {
-    ambientNodes.forEach(node => {
-        try { node.stop(); } catch(e) {}
-        try { node.disconnect(); } catch(e) {}
-    });
-    ambientNodes = [];
+function stopAmbient(fadeMs = 300) {
     stopThunderLoop();
+    if (ambientMasterGain && fadeMs > 0) {
+        const now = audioCtx.currentTime;
+        ambientMasterGain.gain.setValueAtTime(ambientMasterGain.gain.value, now);
+        ambientMasterGain.gain.linearRampToValueAtTime(0, now + fadeMs / 1000);
+        const nodesToStop = [...ambientNodes];
+        ambientNodes = [];
+        setTimeout(() => {
+            nodesToStop.forEach(node => {
+                try { node.stop(); } catch(e) {}
+                try { node.disconnect(); } catch(e) {}
+            });
+        }, fadeMs);
+    } else {
+        ambientNodes.forEach(node => {
+            try { node.stop(); } catch(e) {}
+            try { node.disconnect(); } catch(e) {}
+        });
+        ambientNodes = [];
+    }
 }
 
 function createNoise(type) {
@@ -428,6 +442,12 @@ function getAmbientDest() {
 function startAmbient(weather) {
     if (!audioCtx) return;
     stopAmbient();
+
+    // Create fresh master gain so new weather starts at full volume
+    // while old nodes fade out on the previous gain node
+    ambientMasterGain = audioCtx.createGain();
+    ambientMasterGain.gain.value = parseFloat(document.getElementById('atmosphere-slider')?.value || 50) / 100;
+    ambientMasterGain.connect(audioCtx.destination);
 
     switch (weather) {
         case 'rain': {
