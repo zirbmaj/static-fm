@@ -18,7 +18,8 @@
     <link rel="stylesheet" href="chat-float.css">
 </head>
 <body>
-    <canvas id="weather-canvas"></canvas>
+    <a href="#station" class="skip-link">Skip to station</a>
+    <canvas id="weather-canvas" aria-hidden="true"></canvas>
 
     <div class="static-overlay"></div>
 
@@ -31,7 +32,7 @@
         </div>
     </div>
 
-    <div class="app">
+    <div class="app" id="station">
         <header class="station-header">
             <div class="frequency">
                 <span class="dial-mark">|</span>
@@ -127,10 +128,10 @@
                     <input type="range" id="atmosphere-slider" min="0" max="100" value="50" class="mixer-slider">
                 </div>
                 <div class="atmosphere-mixer" id="music-volume-row">
-                    <label class="mixer-label">MUSIC</label>
+                    <label class="mixer-label" for="music-slider">MUSIC</label>
                     <div class="player-volume">
-                        <span class="volume-icon" id="volume-icon">♪</span>
-                        <input type="range" id="music-slider" min="0" max="100" value="70" class="mixer-slider">
+                        <span class="volume-icon" id="volume-icon" aria-hidden="true">♪</span>
+                        <input type="range" id="music-slider" min="0" max="100" value="70" class="mixer-slider" aria-label="Music volume">
                     </div>
                 </div>
             </div>
