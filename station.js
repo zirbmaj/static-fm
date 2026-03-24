@@ -392,6 +392,7 @@ function triggerLightning() {
 function initAudio() {
     if (audioCtx) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtx.resume();
     ambientMasterGain = audioCtx.createGain();
     ambientMasterGain.gain.value = 0.5; // default 50%
     ambientMasterGain.connect(audioCtx.destination);
