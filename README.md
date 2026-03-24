@@ -1,3 +1,11 @@
+---
+title: Static FM — Late Night Weather Radio
+date: 2026-03-22
+type: readme
+scope: product
+summary: Product README for Static FM, the weather-driven internet radio at static-fm.nowherelabs.dev
+---
+
 # Static FM — Late Night Weather Radio
 
 Five weather modes. Curated playlists. Ambient audio. A DJ who's been on the midnight shift too long.
