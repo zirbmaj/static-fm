@@ -638,6 +638,10 @@ let trackPlayStart = null;
 let currentTrackPlayed = false;
 let autoAdvanceTimer = null;
 
+// DJ voice audio (TTS intros)
+const djVoice = new Audio();
+djVoice.volume = 0.7;
+
 // Listening history (localStorage)
 function getHistory() {
     try {
@@ -880,15 +884,30 @@ function getRareIntro(weather) {
     return matches[Math.floor(Math.random() * matches.length)].text;
 }
 
+function playDJVoice(weather, introIndex, isRare) {
+    const folder = isRare ? 'rare' : weather;
+    djVoice.src = `/audio/intros/${folder}/${introIndex}.mp3`;
+    djVoice.play().catch(() => {});
+}
+
 function showTrack(index) {
     const weather = currentWeather;
     const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
     const track = shuffled[index % shuffled.length];
     const intros = PLAYLISTS[weather].intros;
     const rareIntro = getRareIntro(weather);
-    const intro = rareIntro || intros[Math.floor(Math.random() * intros.length)];
+    const introIndex = Math.floor(Math.random() * intros.length);
+    const intro = rareIntro || intros[introIndex];
 
     document.getElementById('dj-intro').textContent = intro;
+
+    // Play TTS voice for this intro
+    if (rareIntro) {
+        const rareIndex = RARE_INTROS.findIndex(r => r.text === rareIntro);
+        if (rareIndex >= 0) playDJVoice(weather, rareIndex, true);
+    } else {
+        playDJVoice(weather, introIndex, false);
+    }
 
     const titleEl = document.getElementById('track-title');
     titleEl.textContent = track.title;
@@ -939,8 +958,13 @@ function showTrack(index) {
 
 function updateHostMessage() {
     const messages = PLAYLISTS[currentWeather].hostMessages;
-    const msg = messages[Math.floor(Math.random() * messages.length)];
+    const msgIndex = Math.floor(Math.random() * messages.length);
+    const msg = messages[msgIndex];
     document.getElementById('host-message').textContent = `"${msg}"`;
+
+    // Play TTS host voice
+    djVoice.src = `/audio/intros/host/${currentWeather}/${msgIndex}.mp3`;
+    djVoice.play().catch(() => {});
 }
 
 // No auto-advance — let the track play through. Manual control only.
