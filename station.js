@@ -1203,5 +1203,15 @@ document.getElementById('connect-spotify-btn')?.addEventListener('click', () => 
     if (window.SpotifySDK) SpotifySDK.startAuth();
 });
 
+// Auto-resume playback when returning to tab (spotify pauses in background)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    if (sdkMode) {
+        SpotifySDK.resume();
+    } else if (spotifyReady && spotifyController) {
+        spotifyController.play();
+    }
+});
+
 // Init SDK on load
 initSpotifySDK();
