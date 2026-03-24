@@ -881,12 +881,16 @@ function getRareIntro(weather) {
     if (matches.length === 0) return null;
     // 30% chance to show a rare intro when conditions match
     if (Math.random() > 0.3) return null;
-    return matches[Math.floor(Math.random() * matches.length)].text;
+    return matches[Math.floor(Math.random() * matches.length)];
 }
 
-function playDJVoice(weather, introIndex, isRare) {
-    const folder = isRare ? 'rare' : weather;
-    djVoice.src = `/audio/intros/${folder}/${introIndex}.mp3`;
+function playDJVoice(weather, introIndex, isRare, rareEntry) {
+    djVoice.pause();
+    if (isRare && rareEntry) {
+        djVoice.src = `/audio/intros/rare/${rareEntry.weather}-${rareEntry.hour}.mp3`;
+    } else {
+        djVoice.src = `/audio/intros/${weather}/${introIndex}.mp3`;
+    }
     djVoice.play().catch(() => {});
 }
 
@@ -895,16 +899,15 @@ function showTrack(index) {
     const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
     const track = shuffled[index % shuffled.length];
     const intros = PLAYLISTS[weather].intros;
-    const rareIntro = getRareIntro(weather);
+    const rareEntry = getRareIntro(weather);
     const introIndex = Math.floor(Math.random() * intros.length);
-    const intro = rareIntro || intros[introIndex];
+    const intro = rareEntry ? rareEntry.text : intros[introIndex];
 
     document.getElementById('dj-intro').textContent = intro;
 
     // Play TTS voice for this intro
-    if (rareIntro) {
-        const rareIndex = RARE_INTROS.findIndex(r => r.text === rareIntro);
-        if (rareIndex >= 0) playDJVoice(weather, rareIndex, true);
+    if (rareEntry) {
+        playDJVoice(weather, 0, true, rareEntry);
     } else {
         playDJVoice(weather, introIndex, false);
     }
