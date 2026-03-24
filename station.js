@@ -638,6 +638,10 @@ let trackPlayStart = null;
 let currentTrackPlayed = false;
 let autoAdvanceTimer = null;
 
+// DJ voice audio (TTS intros)
+const djVoice = new Audio();
+djVoice.volume = 0.7;
+
 // Listening history (localStorage)
 function getHistory() {
     try {
@@ -877,7 +881,17 @@ function getRareIntro(weather) {
     if (matches.length === 0) return null;
     // 30% chance to show a rare intro when conditions match
     if (Math.random() > 0.3) return null;
-    return matches[Math.floor(Math.random() * matches.length)].text;
+    return matches[Math.floor(Math.random() * matches.length)];
+}
+
+function playDJVoice(weather, introIndex, isRare, rareEntry) {
+    djVoice.pause();
+    if (isRare && rareEntry) {
+        djVoice.src = `/audio/intros/rare/${rareEntry.weather}-${rareEntry.hour}.mp3`;
+    } else {
+        djVoice.src = `/audio/intros/${weather}/${introIndex}.mp3`;
+    }
+    djVoice.play().catch(() => {});
 }
 
 function showTrack(index) {
@@ -885,10 +899,18 @@ function showTrack(index) {
     const shuffled = PLAYLISTS[weather]._shuffled || PLAYLISTS[weather].tracks;
     const track = shuffled[index % shuffled.length];
     const intros = PLAYLISTS[weather].intros;
-    const rareIntro = getRareIntro(weather);
-    const intro = rareIntro || intros[Math.floor(Math.random() * intros.length)];
+    const rareEntry = getRareIntro(weather);
+    const introIndex = Math.floor(Math.random() * intros.length);
+    const intro = rareEntry ? rareEntry.text : intros[introIndex];
 
     document.getElementById('dj-intro').textContent = intro;
+
+    // Play TTS voice for this intro
+    if (rareEntry) {
+        playDJVoice(weather, 0, true, rareEntry);
+    } else {
+        playDJVoice(weather, introIndex, false);
+    }
 
     const titleEl = document.getElementById('track-title');
     titleEl.textContent = track.title;
@@ -939,8 +961,13 @@ function showTrack(index) {
 
 function updateHostMessage() {
     const messages = PLAYLISTS[currentWeather].hostMessages;
-    const msg = messages[Math.floor(Math.random() * messages.length)];
+    const msgIndex = Math.floor(Math.random() * messages.length);
+    const msg = messages[msgIndex];
     document.getElementById('host-message').textContent = `"${msg}"`;
+
+    // Play TTS host voice
+    djVoice.src = `/audio/intros/host/${currentWeather}/${msgIndex}.mp3`;
+    djVoice.play().catch(() => {});
 }
 
 // No auto-advance — let the track play through. Manual control only.
