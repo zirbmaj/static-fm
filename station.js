@@ -1223,5 +1223,17 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// Detect spotify auth errors on redirect
+(function checkSpotifyAuthError() {
+    const hash = window.location.hash;
+    const errorEl = document.getElementById('connect-error');
+    if (!errorEl) return;
+    if (hash === '#' || hash.includes('error=')) {
+        errorEl.textContent = 'connection failed. try again or use "listen free"';
+        errorEl.classList.add('visible');
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+})();
+
 // Init SDK on load
 initSpotifySDK();
