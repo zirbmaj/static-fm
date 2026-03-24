@@ -1236,6 +1236,22 @@ document.getElementById('connect-spotify-btn')?.addEventListener('click', () => 
     if (window.SpotifySDK) SpotifySDK.startAuth();
 });
 
+// "Listen free" button — dismiss connect prompt, confirm free mode (30s previews via embed)
+document.getElementById('connect-free-btn')?.addEventListener('click', () => {
+    const connectEl = document.getElementById('player-connect');
+    if (connectEl) connectEl.style.display = 'none';
+    const embedContainer = document.getElementById('spotify-embed-container');
+    if (embedContainer) embedContainer.classList.add('visible');
+    const hint = document.getElementById('spotify-hint');
+    if (hint) {
+        hint.textContent = 'playing 30s previews · connect spotify for full tracks';
+        hint.style.display = 'block';
+    }
+    if (spotifyReady && spotifyController) {
+        spotifyController.play();
+    }
+});
+
 // Auto-resume playback when returning to tab (spotify pauses in background)
 let wasPlayingBeforeHidden = false;
 document.addEventListener('visibilitychange', () => {
