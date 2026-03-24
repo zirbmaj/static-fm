@@ -228,12 +228,26 @@
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     letter-spacing: 1px;
-    padding: 10px 20px;
+    padding: 14px 20px;
+    min-height: 44px;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none;
     display: inline-block;
+}
+
+.connect-error {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: #c47a7a;
+    margin-top: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.connect-error.visible {
+    opacity: 1;
 }
 
 .connect-btn.spotify {
