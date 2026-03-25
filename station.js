@@ -660,6 +660,88 @@ let trackPlayStart = null;
 let currentTrackPlayed = false;
 let autoAdvanceTimer = null;
 
+// --- Self-hosted music playback ---
+// Local audio player for royalty-free tracks (replaces spotify on free tier)
+const localAudio = new Audio();
+localAudio.volume = 0.5;
+localAudio.loop = false;
+let localMode = false; // true when playing self-hosted tracks
+
+// Auto-advance when local track ends
+localAudio.addEventListener('ended', () => {
+    if (localMode) advanceTrack();
+});
+
+// Track has a localSrc field? Use local playback instead of spotify
+function hasLocalTrack(track) {
+    return track && track.localSrc;
+}
+
+function playLocalTrack(track) {
+    localMode = true;
+    localAudio.src = track.localSrc;
+    localAudio.play().catch(() => {});
+
+    // Update attribution display
+    updateAttribution(track);
+
+    // Hide spotify embed, show local player state
+    const embedContainer = document.getElementById('spotify-embed-container');
+    if (embedContainer) embedContainer.classList.remove('visible');
+
+    // Track play for history
+    currentTrackPlayed = false;
+    trackPlayStart = Date.now();
+    setTimeout(() => {
+        if (!currentTrackPlayed) {
+            currentTrackPlayed = true;
+            saveToHistory(track.title, track.artist, currentWeather, track.sourceUrl || '');
+        }
+    }, 10000);
+
+    // Auto-advance fallback (in case 'ended' event doesn't fire)
+    if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = setTimeout(() => advanceTrack(), 600000); // 10 min max
+}
+
+function stopLocalTrack() {
+    localAudio.pause();
+    localAudio.currentTime = 0;
+}
+
+// Attribution display — shows license info for current track
+function updateAttribution(track) {
+    let attrEl = document.getElementById('track-attribution');
+    if (!attrEl) {
+        // Create attribution element if it doesn't exist
+        const playerInfo = document.querySelector('.track-info') || document.querySelector('.now-playing');
+        if (playerInfo) {
+            attrEl = document.createElement('div');
+            attrEl.id = 'track-attribution';
+            attrEl.style.cssText = 'font-size: 8px; opacity: 0.4; margin-top: 4px; font-style: italic;';
+            playerInfo.appendChild(attrEl);
+        }
+    }
+    if (attrEl && track) {
+        const license = track.license || 'CC0';
+        const artist = track.artist || 'Unknown';
+        attrEl.textContent = `music: ${track.title} by ${artist} · ${license}`;
+    }
+}
+
+// Music volume control — applies to both local audio and spotify
+function setMusicVolume(value) {
+    const vol = value / 100;
+    localAudio.volume = vol;
+    if (window.SpotifySDK && sdkMode) {
+        SpotifySDK.setVolume(vol);
+    }
+    // Update iframe volume if possible
+    if (spotifyController && spotifyController.setVolume) {
+        spotifyController.setVolume(vol);
+    }
+}
+
 // DJ voice audio (TTS intros)
 const djVoice = new Audio();
 djVoice.volume = 0.7;
@@ -947,30 +1029,46 @@ function showTrack(index) {
     const titleEl = document.getElementById('track-title');
     titleEl.textContent = track.title;
     titleEl.style.cursor = 'pointer';
-    titleEl.title = 'Open on Spotify';
 
     document.getElementById('track-artist').textContent = track.artist;
     document.getElementById('track-mood').textContent = track.mood;
     updateFullscreenTrack(track.title, track.artist);
 
-    // Fetch Spotify data for album art and embed player
     const albumArtEl = document.getElementById('album-art');
-    lookupSpotify(track.title, track.artist).then(data => {
-        if (data) {
-            titleEl.onclick = () => window.open(data.spotifyUrl || spotifySearchUrl(track.title, track.artist), '_blank');
-            if (data.albumArt) {
-                albumArtEl.src = data.albumArt;
-                albumArtEl.classList.add('visible');
+
+    // Route to local or spotify playback
+    if (hasLocalTrack(track)) {
+        // Self-hosted track — play directly, no spotify dependency
+        titleEl.title = track.sourceUrl ? 'View source' : track.title;
+        titleEl.onclick = track.sourceUrl ? () => window.open(track.sourceUrl, '_blank') : null;
+        albumArtEl.classList.remove('visible'); // no album art for local tracks
+        stopLocalTrack();
+        playLocalTrack(track);
+    } else {
+        // Spotify track — existing flow
+        localMode = false;
+        stopLocalTrack();
+        titleEl.title = 'Open on Spotify';
+        lookupSpotify(track.title, track.artist).then(data => {
+            if (data) {
+                titleEl.onclick = () => window.open(data.spotifyUrl || spotifySearchUrl(track.title, track.artist), '_blank');
+                if (data.albumArt) {
+                    albumArtEl.src = data.albumArt;
+                    albumArtEl.classList.add('visible');
+                }
+                if (data.id) {
+                    loadSpotifyEmbed(data.id);
+                }
+            } else {
+                titleEl.onclick = () => window.open(spotifySearchUrl(track.title, track.artist), '_blank');
+                albumArtEl.classList.remove('visible');
+                loadSpotifyEmbed(null);
             }
-            if (data.id) {
-                loadSpotifyEmbed(data.id);
-            }
-        } else {
-            titleEl.onclick = () => window.open(spotifySearchUrl(track.title, track.artist), '_blank');
-            albumArtEl.classList.remove('visible');
-            loadSpotifyEmbed(null);
-        }
-    });
+        });
+        // Clear attribution for spotify tracks
+        const attrEl = document.getElementById('track-attribution');
+        if (attrEl) attrEl.textContent = '';
+    }
 
     // Update playlist
     const playlistEl = document.getElementById('playlist');
