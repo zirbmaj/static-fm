@@ -718,7 +718,7 @@ function updateAttribution(track) {
         if (playerInfo) {
             attrEl = document.createElement('div');
             attrEl.id = 'track-attribution';
-            attrEl.style.cssText = 'font-size: 8px; opacity: 0.4; margin-top: 4px; font-style: italic;';
+            attrEl.style.cssText = 'font-size: 10px; opacity: 0.6; margin-top: 4px; font-style: italic;';
             playerInfo.appendChild(attrEl);
         }
     }
