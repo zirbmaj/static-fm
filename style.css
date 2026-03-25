@@ -132,6 +132,14 @@ body {
     letter-spacing: 2px;
 }
 
+.weather-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    letter-spacing: 1px;
+}
+
 .tune-in-hint {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
