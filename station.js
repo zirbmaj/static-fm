@@ -1225,6 +1225,31 @@ animate();
 startBroadcastClock();
 renderHistory();
 
+// Weather hint on start overlay — shows current mode + listener count
+const WEATHER_EMOJI = { rain: '🌧', storm: '⛈', fog: '🌫', snow: '🌨', clear: '🌙' };
+(async function showWeatherHint() {
+    const hint = document.getElementById('weather-hint');
+    if (!hint) return;
+    const emoji = WEATHER_EMOJI[currentWeather] || '';
+    const name = WEATHER_NAMES[currentWeather] || currentWeather;
+    hint.textContent = `${emoji} ${name.toLowerCase()} mode`;
+
+    // Fetch listener count
+    try {
+        const res = await fetch('https://lxecuywjwasxijxgnutn.supabase.co/rest/v1/rpc/get_active_listeners', {
+            method: 'POST',
+            headers: {
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZWN1eXdqd2FzeGlqeGdudXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNDM3OTIsImV4cCI6MjA4OTcxOTc5Mn0.Wyq_doDaRZ7EfdpwM2W0_BNtaVI47yN-4cy4yTWl7jo',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZWN1eXdqd2FzeGlqeGdudXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNDM3OTIsImV4cCI6MjA4OTcxOTc5Mn0.Wyq_doDaRZ7EfdpwM2W0_BNtaVI47yN-4cy4yTWl7jo',
+                'Content-Type': 'application/json'
+            },
+            body: '{}'
+        });
+        const count = await res.json();
+        if (count > 0) hint.textContent = `${emoji} ${name.toLowerCase()} mode · ${count} listening`;
+    } catch {}
+})();
+
 // Audio requires user gesture - init on first click
 document.addEventListener('click', function startAudioOnce() {
     initAudio();
@@ -1232,6 +1257,8 @@ document.addEventListener('click', function startAudioOnce() {
     showTrack(0);
     const hint = document.getElementById('tune-in-hint');
     if (hint) hint.classList.add('hidden');
+    const weatherHint = document.getElementById('weather-hint');
+    if (weatherHint) weatherHint.style.display = 'none';
 }, { once: true });
 
 // --- Spotify SDK Integration ---
